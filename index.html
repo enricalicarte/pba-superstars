@@ -1094,7 +1094,7 @@ body.menu-mode #playerCard{display:none !important}
     <div class="team-tag tag-anguera">PB ANGUERA</div>
     <div class="score-box"><span id="scH">0</span>-<span id="scA">0</span></div>
     <div class="team-tag tag-away" id="awayTag">RIVAL</div>
-    <div class="match-clock"><span id="clockTxt">00:00</span><span class="half-pill" id="halfTxt">1ª</span></div>
+    <div class="match-clock"><span id="clockTxt">00:00</span><span class="half-pill" id="halfTxt">1º</span></div>
   </div>
 
   <div id="playerCard"><span id="pcFace"></span><span id="pcNum">7</span><span id="pcName">-</span><span id="pcEnergy"><i id="pcEnergyFill"></i></span></div>
@@ -1523,8 +1523,10 @@ window.PB_DATA = {
 
   /* --- duración --- */
   partido: {
-    escalaTiempo: 15,                  // 1 segundo real = 15 de partido
-    minutosPorParte: 45
+    partes: 4,                         // cuartos por partido
+    minutosPorParte: 12,               // minutos de juego por cuarto
+    escalaTiempo: 8,                   // 1 segundo real = 8 de partido (48' duran 6 min reales)
+    minutosProrroga: 5                 // prórroga en los torneos si hay empate
   },
 
   /* --- velocidad de los jugadores, en metros por segundo --- */
@@ -1789,7 +1791,11 @@ const AREA_D = C.areaFondo, AREA_H = C.areaAncho;
 const PEN_SPOT = C.puntoPenalti;
 const GRAVITY = C.gravedad;
 const TIME_SCALE = D.partido.escalaTiempo;
-const HALF_SECONDS = D.partido.minutosPorParte * 60;
+const HALF_SECONDS = D.partido.minutosPorParte * 60;   // duración de cada cuarto
+const PARTS = D.partido.partes;                          // número de cuartos
+const TOTAL_SECONDS = HALF_SECONDS * PARTS;
+const EXTRA_SECONDS = D.partido.minutosProrroga * 60;
+const ORD = ["1º", "2º", "3º", "4º", "5º", "6º"];
 
 const SEASONS = D.temporadas;
 const FORMATIONS = D.formaciones;
@@ -2902,7 +2908,9 @@ function buildStadium(venue){
 
   // público de barrio: adolescentes con patinete y pelo brócoli
   streetCrowd = null; streetRiders = [];
+  familyCrowd = null;
   if(venue.id === "street") buildStreetCrowd();
+  else buildFamilyCrowd();
 
   buildGoal(-HALF_W, 1);
   buildGoal(HALF_W, -1);
@@ -3149,6 +3157,171 @@ function updateRiders(dt, t){
   }
 }
 
+/* =========================================================
+   FAMILIAS EN LA GRADA: padres, madres y niños con la camiseta
+   de la Anguera en la grada de enfrente (la que ve la cámara).
+   Tres con vida propia: el que chilla, el que graba con el
+   móvil siguiendo el balón, y el del bombo.
+   ========================================================= */
+let familyCrowd = null;
+let crowdT = 0;
+let fanShouter = null, fanFilmer = null, fanDrummer = null;
+let drumRoll = 0;
+
+function buildFamilyCrowd(){
+  familyCrowd = new THREE.Group();
+  stadium.add(familyCrowd);
+
+  const gLegs = geo("fLegs", function(){ return new THREE.BoxGeometry(0.9, 1.5, 0.55); });
+  const gBody = geo("fBody", function(){ return new THREE.BoxGeometry(1.25, 1.45, 0.75); });
+  const gHead = geo("fHead", function(){ return new THREE.SphereGeometry(0.52, 10, 8); });
+  const gHair = geo("fHair", function(){ return new THREE.SphereGeometry(0.54, 10, 8); });
+  const gArm  = geo("fArm",  function(){ return new THREE.BoxGeometry(0.3, 1.1, 0.3); });
+  const gStripe = geo("fStripe", function(){ return new THREE.BoxGeometry(0.34, 1.4, 0.06); });
+  const gScarf = geo("fScarf", function(){ return new THREE.BoxGeometry(1.3, 0.25, 0.85); });
+  const gPhone = geo("fPhone", function(){ return new THREE.BoxGeometry(0.34, 0.6, 0.06); });
+  const gDrum  = geo("fDrum",  function(){ return new THREE.CylinderGeometry(0.95, 0.95, 0.7, 14); });
+  const gStick = geo("fStick", function(){ return new THREE.CylinderGeometry(0.05, 0.05, 0.9, 6); });
+  const gMouth = geo("fMouth", function(){ return new THREE.SphereGeometry(0.16, 8, 6); });
+
+  const K = SEASON.kit;
+  const matShirt = new THREE.MeshLambertMaterial({color: K.shirt});
+  const matBlue  = new THREE.MeshLambertMaterial({color: 0x1e3070});
+  const matRed   = new THREE.MeshLambertMaterial({color: 0xd81f2a});
+  const matDark  = new THREE.MeshLambertMaterial({color: 0x1f2937});
+  const matPhone = new THREE.MeshLambertMaterial({color: 0x111827});
+  const matDrum  = new THREE.MeshLambertMaterial({color: 0xfacc15});
+  const matDrumSkin = new THREE.MeshLambertMaterial({color: 0xf8fafc});
+  const matStick = new THREE.MeshLambertMaterial({color: 0xd6b370});
+  const matMouth = new THREE.MeshLambertMaterial({color: 0x3b0a0a});
+  const civil = [0xf8fafc, 0x64748b, 0x0ea5e9, 0xf472b6, 0x22c55e, 0x1e3a8a, 0x111827];
+  const skins = [0xf6c9a0, 0xe0a97d, 0xb87a4e, 0x8d5524];
+  const hairs = [0x2b1d12, 0x111111, 0x5b3a1e, 0xc98a3a, 0xd6d3d1];
+
+  let seed = 33;
+  const rnd = function(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  const pick = function(arr){ return arr[Math.floor(rnd() * arr.length)]; };
+
+  const makeFan = function(kid){
+    const f = new THREE.Group();
+    const sc = kid ? 0.62 : 1;
+    const skin = new THREE.MeshLambertMaterial({color: pick(skins)});
+    const conCamiseta = rnd() < 0.72;
+    const legs = new THREE.Mesh(gLegs, matDark); legs.position.y = 0.75; f.add(legs);
+    const body = new THREE.Mesh(gBody, conCamiseta ? matShirt : new THREE.MeshLambertMaterial({color: pick(civil)}));
+    body.position.y = 2.2; f.add(body);
+    if(conCamiseta && K.stripes){
+      const st1 = new THREE.Mesh(gStripe, matBlue); st1.position.set(-0.2, 2.2, 0.4); f.add(st1);
+      const st2 = new THREE.Mesh(gStripe, matRed);  st2.position.set( 0.2, 2.2, 0.4); f.add(st2);
+    }
+    const head = new THREE.Mesh(gHead, skin); head.position.y = 3.42; f.add(head);
+    const hair = new THREE.Mesh(gHair, new THREE.MeshLambertMaterial({color: pick(hairs)}));
+    hair.position.y = 3.62; hair.scale.set(1, 0.55 + rnd() * 0.3, 1); f.add(hair);
+    if(rnd() < 0.35){ const sf = new THREE.Mesh(gScarf, rnd() < 0.5 ? matShirt : matBlue); sf.position.y = 2.98; f.add(sf); }
+    const armL = new THREE.Mesh(gArm, skin); armL.position.set(-0.78, 2.15, 0);
+    const armR = new THREE.Mesh(gArm, skin); armR.position.set( 0.78, 2.15, 0);
+    f.add(armL); f.add(armR);
+    f.userData = {armL: armL, armR: armR, head: head, bob: rnd() * Math.PI * 2, kid: kid};
+    f.scale.setScalar(sc);
+    return f;
+  };
+
+  // dos filas en la grada de enfrente (z negativa, la que mira la cámara)
+  const filas = [{z: -(HALF_H + 12), y: 3.4, n: 12}, {z: -(HALF_H + 18.8), y: 6.1, n: 10}];
+  let idx = 0;
+  for(let r = 0; r < filas.length; r++){
+    const F = filas[r];
+    for(let i = 0; i < F.n; i++){
+      const x = -HALF_W + 6 + (HALF_W * 2 - 12) * (i + 0.5) / F.n + (rnd() - 0.5) * 3;
+      const kid = (rnd() < 0.35);
+      const f = makeFan(kid);
+      f.position.set(x, F.y, F.z + (rnd() - 0.5) * 1.2);
+      f.rotation.y = (rnd() - 0.5) * 0.5;   // miran al campo (+z)
+      f.userData.role = "fan";
+      familyCrowd.add(f);
+      idx++;
+    }
+  }
+
+  // --- el que chilla: brazos arriba, boca abierta, salta ---
+  fanShouter = makeFan(false);
+  fanShouter.position.set(-18, 3.4, -(HALF_H + 12));
+  fanShouter.userData.role = "grita";
+  const boca = new THREE.Mesh(gMouth, matMouth); boca.position.set(0, 3.28, 0.46); boca.scale.set(1, 1.4, 0.6);
+  fanShouter.add(boca);
+  familyCrowd.add(fanShouter);
+
+  // --- el que graba con el móvil: brazos al frente con el teléfono, sigue el balón ---
+  fanFilmer = makeFan(false);
+  fanFilmer.position.set(14, 3.4, -(HALF_H + 12));
+  fanFilmer.userData.role = "graba";
+  fanFilmer.userData.armL.rotation.x = -1.35; fanFilmer.userData.armL.position.set(-0.32, 2.7, 0.55);
+  fanFilmer.userData.armR.rotation.x = -1.35; fanFilmer.userData.armR.position.set( 0.32, 2.7, 0.55);
+  const phone = new THREE.Mesh(gPhone, matPhone); phone.position.set(0, 3.15, 1.15);
+  fanFilmer.add(phone);
+  familyCrowd.add(fanFilmer);
+
+  // --- el del bombo: tambor delante y baquetas ---
+  fanDrummer = makeFan(false);
+  fanDrummer.position.set(34, 3.4, -(HALF_H + 12));
+  fanDrummer.userData.role = "bombo";
+  const drum = new THREE.Mesh(gDrum, matDrum); drum.rotation.x = Math.PI / 2; drum.position.set(0, 1.9, 1.1);
+  const skinD = new THREE.Mesh(geo("fDrumSkin", function(){ return new THREE.CylinderGeometry(0.8, 0.8, 0.1, 14); }), matDrumSkin);
+  skinD.rotation.x = Math.PI / 2; skinD.position.set(0, 1.9, 1.5);
+  fanDrummer.add(drum); fanDrummer.add(skinD);
+  const stL = new THREE.Mesh(gStick, matStick), stR = new THREE.Mesh(gStick, matStick);
+  stL.rotation.x = -1.2; stL.position.set(-0.55, 2.6, 0.6);
+  stR.rotation.x = -1.2; stR.position.set( 0.55, 2.6, 0.6);
+  fanDrummer.userData.armL.position.set(-0.78, 2.3, 0.25);
+  fanDrummer.userData.armR.position.set( 0.78, 2.3, 0.25);
+  fanDrummer.userData.stL = stL; fanDrummer.userData.stR = stR;
+  fanDrummer.add(stL); fanDrummer.add(stR);
+  familyCrowd.add(fanDrummer);
+}
+
+function updateFamilyCrowd(dt, t){
+  if(!familyCrowd) return;
+  const hype = (G.state === "goal" || G.state === "intro");
+  const excited = hype ? 2.4 : 1;
+  const kids = familyCrowd.children;
+  for(let i = 0; i < kids.length; i++){
+    const f = kids[i], u = f.userData;
+    const base = (Math.abs(f.position.z) > HALF_H + 15) ? 6.1 : 3.4;
+    if(u.role === "fan"){
+      f.position.y = base + Math.abs(Math.sin(t * 1.7 * excited + u.bob)) * 0.12 * excited;
+      const wave = hype ? Math.sin(t * 9 + u.bob) * 0.9 - 1.6 : 0;
+      u.armL.rotation.x = wave; u.armR.rotation.x = wave;
+    } else if(u.role === "grita"){
+      f.position.y = base + Math.abs(Math.sin(t * 5.5)) * 0.45;
+      u.armL.rotation.x = -2.6 + Math.sin(t * 7) * 0.25;
+      u.armR.rotation.x = -2.6 - Math.sin(t * 7) * 0.25;
+      u.head.rotation.x = -0.25 + Math.sin(t * 5.5) * 0.12;
+    } else if(u.role === "graba"){
+      // gira lentamente para encuadrar el balón
+      const dx = ball.pos.x - f.position.x, dz = ball.pos.z - f.position.z;
+      const target = Math.atan2(dx, dz);
+      let diff = target - f.rotation.y;
+      while(diff > Math.PI) diff -= Math.PI * 2;
+      while(diff < -Math.PI) diff += Math.PI * 2;
+      f.rotation.y += diff * Math.min(1, dt * 2.2);
+      f.position.y = base + Math.sin(t * 0.8) * 0.03;
+    } else if(u.role === "bombo"){
+      const beat = (drumRoll > 0) ? 14 : 4.6;
+      const ph = t * beat;
+      u.stL.rotation.x = -1.2 + Math.max(0, Math.sin(ph)) * 0.9;
+      u.stR.rotation.x = -1.2 + Math.max(0, Math.sin(ph + Math.PI)) * 0.9;
+      u.armL.rotation.x = -0.5 + Math.max(0, Math.sin(ph)) * 0.5;
+      u.armR.rotation.x = -0.5 + Math.max(0, Math.sin(ph + Math.PI)) * 0.5;
+      f.position.y = base + Math.abs(Math.sin(ph * 0.5)) * 0.08;
+      if(drumRoll > 0){
+        drumRoll -= dt;
+        u.nextHit = (u.nextHit || 0) - dt;
+        if(u.nextHit <= 0){ SoundFX.tone("sine", 95, 40, 0.16, 0.22); u.nextHit = Math.PI / beat; }
+      }
+    }
+  }
+}
+
 let streetT = 0;
 function updateStreetCrowd(dt){
   if(!streetCrowd) return;
@@ -3238,7 +3411,8 @@ function buildMarkers(){
 const GEO = {};
 function geo(k, make){ if(!GEO[k]) GEO[k] = make(); return GEO[k]; }
 
-function createPlayerMesh(shirt, shorts, socks, numbered){
+const HAIR_PALETTE = [0x2b1d12, 0x111111, 0x5b3a1e, 0xc98a3a, 0x3f2a14, 0x7a4b23];
+function createPlayerMesh(shirt, shorts, socks, numbered, hairHex){
   const g = new THREE.Group();
   const matSkin   = new THREE.MeshLambertMaterial({color: 0xf6c9a0});
   const matShirt  = new THREE.MeshLambertMaterial({color: shirt});
@@ -3281,9 +3455,19 @@ function createPlayerMesh(shirt, shorts, socks, numbered){
   head.position.y = 3.05; head.scale.set(1, 0.98, 0.96);
   g.add(head);
 
-  const hair = new THREE.Mesh(ball8(0.79), matDark);
-  hair.position.y = 3.24; hair.scale.set(1, 0.55, 1);
-  g.add(hair);
+  // pelo brócoli: melena rizada con rizos apilados en lo alto
+  const matHair = new THREE.MeshLambertMaterial({color: hairHex || 0x2b1d12});
+  const cap = new THREE.Mesh(ball8(0.82), matHair);   // melena entera, sin rapar los lados
+  cap.position.y = 3.2; cap.scale.set(1, 0.72, 1);
+  g.add(cap);
+  const curlG = ball8(0.36);
+  const curls = [[0, 3.86, 0.02, 1.15], [-0.31, 3.72, 0.2, 0.95], [0.3, 3.74, -0.18, 1.0], [0.04, 3.68, 0.36, 0.85]];
+  for(let c = 0; c < curls.length; c++){
+    const curl = new THREE.Mesh(curlG, matHair);
+    curl.position.set(curls[c][0], curls[c][1], curls[c][2]);
+    curl.scale.setScalar(curls[c][3]);
+    g.add(curl);
+  }
 
   const eyeG = ball8(0.12);
   const eL = new THREE.Mesh(eyeG, matEye); eL.position.set(-0.27, 3.06, 0.68); eL.scale.set(1, 1.3, 0.6);
@@ -3346,7 +3530,7 @@ class Player {
     this.pname = "";
     this.posName = "";
 
-    this.mesh = createPlayerMesh(cs, cp, cm, team === "home");
+    this.mesh = createPlayerMesh(cs, cp, cm, team === "home", HAIR_PALETTE[G.players.length % HAIR_PALETTE.length]);
     this.numMat = this.mesh.userData.numMat;
     this.mesh.position.copy(this.pos);
     scene.add(this.mesh);
@@ -4538,6 +4722,7 @@ function scoreGoal(team){
 
   SoundFX.whistle(true);
   SoundFX.cheer(team === "home");
+  if(team === "home") drumRoll = 2.6;
   G.kickoffTeam = (team === "home") ? "away" : "home";
 
   // quién lo ha marcado y quién celebra
@@ -4572,11 +4757,12 @@ function scoreGoal(team){
 }
 
 function endHalf(){
-  if(G.half === 1){
+  if(G.half < PARTS && !G.extra){
     G.state = "halftime";
-    G.stateTimer = 3.2;
-    G.clock = HALF_SECONDS;
-    DOM.goalBanner.textContent = "DESCANSO";
+    const mitad = (G.half === Math.floor(PARTS / 2));       // el descanso largo va a mitad de partido
+    G.stateTimer = mitad ? 3.2 : 2.2;
+    G.clock = HALF_SECONDS * G.half;
+    DOM.goalBanner.textContent = mitad ? "DESCANSO" : ("FIN DEL " + ORD[G.half - 1] + " CUARTO");
     DOM.goalBanner.style.color = "#e2e8f0";
     DOM.goalBanner.classList.add("show");
     SoundFX.whistle(true);
@@ -4584,7 +4770,7 @@ function endHalf(){
     // en los torneos no hay empates: prórroga a gol de oro y luego penaltis
     if(cupMode && G.scoreH === G.scoreA && !G.extra){
       G.extra = true;
-      G.clock = HALF_SECONDS * 2;
+      G.clock = TOTAL_SECONDS;
       DOM.goalBanner.textContent = "PRÓRROGA · GOL DE ORO";
       DOM.goalBanner.style.color = "#facc15";
       DOM.goalBanner.classList.add("show");
@@ -4597,7 +4783,7 @@ function endHalf(){
       simulateShootout();
     }
     G.state = "fulltime";
-    G.clock = G.extra ? HALF_SECONDS * 2 + 600 : HALF_SECONDS * 2;
+    G.clock = G.extra ? TOTAL_SECONDS + EXTRA_SECONDS : TOTAL_SECONDS;
     DOM.goalBanner.classList.remove("show");
     SoundFX.whistle(true);
     const gane = G.shootout ? (G.shootout.h > G.shootout.a) : (G.scoreH >= G.scoreA);
@@ -4654,12 +4840,13 @@ function resetMatch(){
   G.scoreH = 0; G.scoreA = 0; G.clock = 0; G.half = 1;
   DOM.scH.textContent = "0";
   DOM.scA.textContent = "0";
-  DOM.halfTxt.textContent = "1ª";
+  DOM.halfTxt.textContent = ORD[0];
   DOM.endScreen.style.display = "none";
   DOM.pauseScreen.style.display = "none";
   input.charging = false;
   DOM.shotMeterWrap.style.display = "none";
   kickOff("home");
+  startIntro();
 }
 
 /* =========================================================
@@ -5228,7 +5415,8 @@ function simulateShootout(){
   const pa = 0.78, pb = 0.60 + 0.28 * rivalStrength(r);
   let h = 0, a = 0;
   for(let k = 0; k < 5; k++){ if(Math.random() < pa) h++; if(Math.random() < pb) a++; }
-  while(h === a){ if(Math.random() < pa) h++; if(Math.random() < pb) a++; }
+  // muerte súbita: la presión baja el acierto para que las tandas no se eternicen
+  while(h === a){ if(Math.random() < pa * 0.8) h++; if(Math.random() < pb * 0.8) a++; }
   G.shootout = {h: h, a: a};
   showToast("Penaltis: " + h + "-" + a);
 }
@@ -6069,7 +6257,7 @@ function togglePause(){
     G.state = pausedFrom;
     DOM.pauseScreen.style.display = "none";
     clock.getDelta();
-  } else if(G.state === "play" || G.state === "goal" || G.state === "halftime" || G.state === "penalty"){
+  } else if(G.state === "play" || G.state === "goal" || G.state === "halftime" || G.state === "penalty" || G.state === "intro"){
     pausedFrom = G.state;
     G.state = "paused";
     input.charging = false;
@@ -6250,7 +6438,68 @@ function renderRadar(){
 /* =========================================================
    13. CÁMARA
    ========================================================= */
+/* =========================================================
+   PLANO DE AMBIENTE: antes del partido la cámara recorre la
+   grada haciendo zoom hacia el público, y luego corta al campo.
+   Un toque lo salta.
+   ========================================================= */
+const INTRO_SECONDS = 5.7;
+function startIntro(){
+  G.state = "intro";
+  G.introT = 0;
+  drumRoll = INTRO_SECONDS + 0.5;          // el del bombo calienta la grada
+  if(DOM.actionToast) DOM.actionToast.style.opacity = "0";
+}
+function endIntro(){
+  if(G.state !== "intro") return;
+  G.state = "play";
+  G.protect = 1.0;
+  updateCamera(5);                 // corte seco al plano de juego, como en la tele
+  SoundFX.whistle(false);
+  showToast("¡Comienza el partido!");
+}
+
+function smooth(a, b, t){
+  const k = clamp((t - a) / (b - a), 0, 1);
+  return k * k * (3 - 2 * k);
+}
+
+function introCamera(dt){
+  G.introT += dt;
+  const t = G.introT;
+  const street = (G.campo && G.campo.id === "street");
+  const crowdZ = street ? -(HALF_H + 7) : -(HALF_H + 12);
+  const crowdY = street ? 2.3 : 4.6;
+
+  // paradas del barrido: el que chilla, el del móvil y el del bombo
+  const xs = street ? [-30, 0, 30]
+                    : [fanShouter ? fanShouter.position.x : -18,
+                       fanFilmer  ? fanFilmer.position.x  : 14,
+                       fanDrummer ? fanDrummer.position.x : 34];
+  const nearZ = crowdZ + 12.5, nearY = crowdY + 2.2;
+
+  let cx, cy, cz, lx;
+  if(t < 1.7){                                   // zoom in desde lejos hasta el que chilla
+    const e = smooth(0, 1.7, t);
+    cx = xs[0];
+    cy = lerpN(15, nearY, e);
+    cz = lerpN(crowdZ + 44, nearZ, e);
+    lx = xs[0];
+  } else if(t < 3.4){                            // barrido hasta el que graba
+    const e = smooth(1.7, 3.4, t);
+    cx = lerpN(xs[0], xs[1], e); cy = nearY; cz = nearZ; lx = cx;
+  } else {                                       // y hasta el del bombo
+    const e = smooth(3.4, 5.2, t);
+    cx = lerpN(xs[1], xs[2], e); cy = nearY; cz = nearZ; lx = cx;
+  }
+  camera.position.set(cx, cy, cz);
+  camera.lookAt(lx, crowdY + 0.7, crowdZ);
+
+  if(t >= 5.7) endIntro();
+}
+
 function updateCamera(dt){
+  if(G.state === "intro"){ introCamera(dt); return; }
   const aspect = camera.aspect;
   const celebrating = (G.state === "goal" && G.celebrant);
   const focus = celebrating ? G.celebrant.pos : ball.pos;
@@ -6288,7 +6537,7 @@ function menuCamera(){
    ========================================================= */
 function updateClock(dt){
   G.clock += dt * TIME_SCALE;
-  const limit = HALF_SECONDS * G.half + (G.extra ? 600 : 0);
+  const limit = G.extra ? TOTAL_SECONDS + EXTRA_SECONDS : HALF_SECONDS * G.half;
   if(G.clock >= limit){ G.clock = limit; endHalf(); }
 
   const shown = Math.floor(G.clock);
@@ -6305,9 +6554,23 @@ function update(dt){
   }
 
   updateWeather(dt);
+  crowdT += dt;
   updateStreetCrowd(dt);
+  updateFamilyCrowd(dt, crowdT);
   if(G.state === "menu"){
     menuCamera();
+    return;
+  }
+  if(G.state === "intro"){
+    for(let i = 0; i < G.players.length; i++){
+      const p = G.players[i];
+      p.want.set(0, 0, 0);
+      p.step(dt);
+    }
+    updatePossession(dt);
+    updateBall(dt);
+    updateCamera(dt);
+    renderRadar();
     return;
   }
 
@@ -6352,10 +6615,10 @@ function update(dt){
         else kickOff(G.kickoffTeam);
       }
       else if(G.state === "halftime"){
-        G.half = 2;
-        DOM.halfTxt.textContent = "2ª";
+        G.half++;
+        DOM.halfTxt.textContent = ORD[G.half - 1];
         DOM.goalBanner.classList.remove("show");
-        kickOff("away");
+        kickOff((G.half % 2 === 0) ? "away" : "home");     // el saque se alterna cada cuarto
       }
     }
   }
@@ -6500,7 +6763,8 @@ function validateData(){
   };
   need(D.campo, ["ancho","alto","porteriaAncho","porteriaAlto","porteriaFondo","posteGrosor",
                  "balonRadio","areaFondo","areaAncho","puntoPenalti","gravedad"], "campo");
-  need(D.partido, ["escalaTiempo","minutosPorParte"], "partido");
+  need(D.partido, ["partes","minutosPorParte","escalaTiempo","minutosProrroga"], "partido");
+  if(D.partido && (D.partido.partes < 1 || D.partido.partes > 6)) e.push("partido: partes debe estar entre 1 y 6");
   need(D.velocidades, ["campo","sprint","portero"], "velocidades");
   need(D.faltas, ["distanciaLimpia","entradaBase","entradaCerca","entradaArea","amarilla","amarillaArea"], "faltas");
   need(D.energia, ["gastoParado","gastoCarrera","recargaBanquillo","recargaRival",
@@ -6663,6 +6927,9 @@ function boot(){
     ensureFullscreen();
   });
 
+  document.addEventListener("pointerdown", function(){ if(G.state === "intro") endIntro(); });
+  window.addEventListener("keydown", function(){ if(G.state === "intro") endIntro(); });
+
   document.addEventListener("visibilitychange", function(){
     if(document.hidden && G.state === "play") togglePause();
     else if(!document.hidden) clock.getDelta();
@@ -6679,8 +6946,9 @@ if(document.readyState === "loading"){
   boot();
 }
 
-window.PB_GAME = {G: G, scene: scene, ball: ball, update: function(dt){ update(dt); }, kickOff: kickOff,
-                  resetMatch: resetMatch, RIVALS: RIVALS,
+window.PB_GAME = {G: G, scene: scene, camera: camera, ball: ball, update: function(dt){ update(dt); }, kickOff: kickOff,
+                  resetMatchIntro: resetMatch, endIntro: endIntro,
+                  resetMatch: function(){ resetMatch(); endIntro(); }, RIVALS: RIVALS,
                   setRival: function(i){ rivalIdx = i; applyRivalLevel(); rememberSetup(); },
                   FORMATIONS: FORMATIONS,
                   squad: function(){ return SQUAD; }, rivals: function(){ return RIVALS; },
