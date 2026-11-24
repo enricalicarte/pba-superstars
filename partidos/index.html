@@ -176,7 +176,10 @@ const pitch = '<svg class="pitch" viewBox="0 0 160 90" preserveAspectRatio="none
 const playIco = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>';
 // "PB Anguera vs Sant Andreu" -> ["PB Anguera","Sant Andreu"]
 const teams = t => { const p = String(t).split(/\s+(?:vs\.?|v|contra|-|–)\s+/i); return p.length === 2 ? p : null; };
-const isNew = m => Date.now() - m.sort < 8 * 864e5;
+const isNew = m => !!m.date && Date.now() - m.date < 8 * 864e5;
+// '1QUART.mp4' / 'Q1.mp4' / '2Quart20260207.mp4' -> 'Quart 1'
+const partName = n => { const b = String(n).replace(/\.[^.]+$/, ''); const q = b.match(/^\s*(?:(\d)\s*(?:r|n|t|º)?\s*quart|q\s*(\d)(?!\d))/i); return q ? 'Quart ' + (q[1] || q[2]) : b.replace(/_/g, ' '); };
+const jor = m => m.jornada ? 'J' + m.jornada : '';
 
 function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 1800); }
 
@@ -184,10 +187,10 @@ function tile(m){
   const s = seen.includes(m.id);
   return '<button class="tile" data-id="' + esc(m.id) + '"><div class="im">' + pitch +
     '<img loading="lazy" alt="" src="' + thumb(m.videos[0].id) + '" onerror="this.remove()">' +
-    (isNew(m) && !s ? '<span class="badge y">NUEVO</span>' : (m.date ? '<span class="badge">' + esc(fmtDate(m.date)) + '</span>' : '')) +
+    (isNew(m) && !s ? '<span class="badge y">NUEVO</span>' : (m.jornada || m.date ? '<span class="badge">' + esc([jor(m), m.date && !m.jornada ? fmtDate(m.date) : ''].filter(Boolean).join(' ')) + '</span>' : '')) +
     '<span class="dur">' + m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' partes') + '</span>' +
     '<span class="play"><span>' + playIco + '</span></span>' + (s ? '<span class="seen"></span>' : '') +
-    '</div><div class="tt">' + esc(m.title) + '</div><div class="ts">' + esc([m.group, m.date && isNew(m) && !s ? fmtDate(m.date) : ''].filter(Boolean).join(' · ') || ' ') + '</div></button>';
+    '</div><div class="tt">' + esc(m.title) + (m.score ? ' <span style="color:var(--acc);white-space:nowrap">' + esc(m.score) + '</span>' : '') + '</div><div class="ts">' + esc([m.group, m.date ? fmtDate(m.date) : ''].filter(Boolean).join(' · ') || ' ') + '</div></button>';
 }
 
 function rail(title, list, id){
@@ -205,8 +208,8 @@ function heroHTML(m){
   const tm = teams(m.title);
   return '<section class="hero"><div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 1600) + '" onerror="this.remove()"></div><div class="in">' +
     '<div class="tag"><i></i>' + (isNew(m) ? 'ÚLTIMO PARTIDO · NUEVO' : 'ÚLTIMO PARTIDO') + '</div>' +
-    (tm ? '<h1 class="vs"><span class="t">' + esc(tm[0]) + '</span><span class="x">VS</span><span class="t">' + esc(tm[1]) + '</span></h1>' : '<h1 class="vs"><span class="t">' + esc(m.title) + '</span></h1>') +
-    '<div class="hmeta">' + esc([fmtDate(m.date), m.group, m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' partes')].filter(Boolean).join('  ·  ')) + '</div>' +
+    (tm ? '<h1 class="vs"><span class="t">' + esc(tm[0]) + '</span><span class="x">' + esc(m.score || 'VS') + '</span><span class="t">' + esc(tm[1]) + '</span></h1>' : '<h1 class="vs"><span class="t">' + esc(m.title) + '</span></h1>') +
+    '<div class="hmeta">' + esc([m.jornada ? 'Jornada ' + m.jornada : '', fmtDate(m.date), m.group, m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' partes')].filter(Boolean).join('  ·  ')) + '</div>' +
     '<div class="btns"><button class="btn pri" id="heroPlay">' + playIco + 'Ver partido</button><button class="btn" id="heroShare">Compartir</button></div></div></section>';
 }
 
@@ -228,11 +231,11 @@ function renderHome(){
   list.forEach(m => { const d = new Date(m.date); const k = m.date ? MONTHS_L[d.getMonth()] + ' ' + d.getFullYear() : 'Otros vídeos'; let g = byMonth.find(x => x.k === k); if (!g) byMonth.push(g = { k, items: [] }); g.items.push(m); });
   const groups = group ? [] : [...new Set(DATA.map(m => m.group).filter(Boolean))];
   let html = heroHTML(feat) + '<div class="rails">';
-  html += rail('Últimos partidos', list.slice(0, 12), 'r-last');
+  html += rail('Últimos partidos', list.slice(1, 13), 'r-last');
   html += rail('Sigue viendo', cont, 'r-cont');
   html += pending.length && pending.length < list.length ? rail('Aún no los has visto', pending, 'r-pend') : '';
   html += groups.map((g, i) => rail(g, DATA.filter(m => m.group === g), 'r-g' + i)).join('');
-  html += byMonth.length > 1 ? byMonth.map((g, i) => rail(g.k, g.items, 'r-m' + i)).join('') : '';
+  html += !groups.length && !group && byMonth.length > 1 ? byMonth.map((g, i) => rail(g.k, g.items, 'r-m' + i)).join('') : '';
   html += '<div style="text-align:center;padding:30px 0 0"><button class="btn" id="reload">Buscar vídeos nuevos en Drive</button></div></div>';
   $('#app').innerHTML = html;
   $('#heroPlay').addEventListener('click', () => openMatch(feat));
@@ -252,11 +255,11 @@ function openMatch(m, noPush){
   const tm = teams(m.title);
   const more = DATA.filter(x => x.id !== m.id && (!m.group || x.group === m.group)).slice(0, 14);
   $('#app').innerHTML = '<div class="watch"><div class="stage"><iframe id="frame" allow="autoplay; fullscreen" allowfullscreen title="Vídeo del partido"></iframe></div>' +
-    '<div class="winfo"><div><div class="tag"><i></i>' + esc([fmtDate(m.date), m.group].filter(Boolean).join(' · ') || 'PARTIDO') + '</div>' +
-    '<h1>' + (tm ? esc(tm[0]) + ' <span style="color:var(--acc)">vs</span> ' + esc(tm[1]) : esc(m.title)) + '</h1>' +
+    '<div class="winfo"><div><div class="tag"><i></i>' + esc([m.jornada ? 'JORNADA ' + m.jornada : '', fmtDate(m.date), m.group].filter(Boolean).join(' · ') || 'PARTIDO') + '</div>' +
+    '<h1>' + (tm ? esc(tm[0]) + ' <span style="color:var(--acc);white-space:nowrap">' + esc(m.score || 'vs') + '</span> ' + esc(tm[1]) : esc(m.title) + (m.score ? ' <span style="color:var(--acc);white-space:nowrap">' + esc(m.score) + '</span>' : '')) + '</h1>' +
     '<div class="btns" style="margin-top:16px"><button class="btn pri" id="share">Copiar enlace</button><a class="btn" id="open" target="_blank" rel="noopener">Abrir en Drive</a><button class="btn" id="back">← Volver</button></div></div>' +
     '<div>' + (m.videos.length > 1 ? '<p class="lbl">PARTES DEL PARTIDO</p>' + m.videos.map((v, i) =>
-      '<button class="part" data-i="' + i + '"><span class="mini"><img loading="lazy" alt="" src="' + thumb(v.id, 320) + '" onerror="this.remove()"></span><span class="nm">' + esc(v.name.replace(/\.[^.]+$/, '')) + '</span><span class="sz">' + fmtSize(v.size) + '</span></button>').join('') : '') + '</div></div>' +
+      '<button class="part" data-i="' + i + '"><span class="mini"><img loading="lazy" alt="" src="' + thumb(v.id, 320) + '" onerror="this.remove()"></span><span class="nm">' + esc(partName(v.name)) + '</span><span class="sz">' + fmtSize(v.size) + '</span></button>').join('') : '') + '</div></div>' +
     '<div class="rails">' + rail('Más partidos', more, 'r-more') + '</div></div>';
   document.querySelectorAll('.part').forEach(p => p.addEventListener('click', () => play(+p.dataset.i)));
   $('#share').addEventListener('click', () => share(m));
