@@ -59,8 +59,9 @@ const store = { get(k){ try { return localStorage.getItem(k); } catch (e) { retu
 const frame = $('app');
 
 if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(APPS_SCRIPT_URL)) {
-  document.body.insertAdjacentHTML('beforeend', '<div class="cfg">Falta configurar la URL de Apps Script en anguera-tv/index.html</div>');
-  $('splash').classList.add('off');
+  // Mientras no esté conectada a Drive, enseña la demo con partidos de ejemplo
+  frame.src = 'demo.html';
+  frame.addEventListener('load', () => setTimeout(() => $('splash').classList.add('off'), 250));
 } else {
   // Pasa el partido compartido (?m=ID) a la plataforma
   const m = new URLSearchParams(location.search).get('m');
