@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T10:14:54+00:00",
+ "updated": "2026-11-25T10:19:01+00:00",
  "competition": "Prebenjamí S8 · Grup 3",
  "season": "2026-2027",
  "group": "T26/27 S8",
@@ -17,6 +17,10 @@
    "status": "FINALITZAT",
    "score": [
     10,
+    0
+   ],
+   "realScore": [
+    12,
     0
    ],
    "goals": [
@@ -121,6 +125,10 @@
     0,
     10
    ],
+   "realScore": [
+    0,
+    12
+   ],
    "goals": [
     {
      "min": 2,
@@ -220,6 +228,10 @@
    "angueraHome": true,
    "status": "FINALITZAT",
    "score": [
+    11,
+    1
+   ],
+   "realScore": [
     11,
     1
    ],
@@ -323,6 +335,10 @@
    "score": [
     0,
     10
+   ],
+   "realScore": [
+    0,
+    13
    ],
    "goals": [
     {
@@ -433,6 +449,10 @@
     9,
     3
    ],
+   "realScore": [
+    9,
+    3
+   ],
    "goals": [
     {
      "min": 1,
@@ -528,6 +548,10 @@
    "score": [
     2,
     12
+   ],
+   "realScore": [
+    2,
+    14
    ],
    "goals": [
     {
@@ -655,6 +679,10 @@
     12,
     2
    ],
+   "realScore": [
+    12,
+    2
+   ],
    "goals": [
     {
      "min": 3,
@@ -766,6 +794,10 @@
    "score": [
     0,
     10
+   ],
+   "realScore": [
+    0,
+    14
    ],
    "goals": [
     {
@@ -880,6 +912,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -894,6 +927,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -908,6 +942,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -922,6 +957,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -936,6 +972,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -950,6 +987,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -964,6 +1002,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -978,6 +1017,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -992,6 +1032,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1006,6 +1047,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1020,6 +1062,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1034,6 +1077,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1048,6 +1092,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1062,6 +1107,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1076,6 +1122,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1090,6 +1137,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1104,6 +1152,7 @@
    "angueraHome": false,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   },
   {
@@ -1118,6 +1167,7 @@
    "angueraHome": true,
    "status": "PENDENT",
    "score": null,
+   "realScore": null,
    "goals": []
   }
  ]

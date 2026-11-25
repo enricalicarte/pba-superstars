@@ -84,12 +84,19 @@ def parse_acta(lines, raw_html=''):
         iso = d.strftime('%Y-%m-%d')
     except ValueError:
         iso = None
+    # Goles reales (los del acta). El marcador oficial limita la diferencia a 10 goles.
+    real = None
+    if score is not None:
+        ours = sum(1 for g in goals if g['ours']); theirs = len(goals) - ours
+        real = [ours, theirs] if ang_home else [theirs, ours]
+        if goals and (real[0] < score[0] or real[1] < score[1]):
+            real = score[:]   # acta incompleta: nos quedamos con el oficial
     cr = crests(raw_html)
     return {
         'jornada': jornada, 'date': iso, 'time': hora.replace('h', '').replace('.', ':') if hora else '',
         'stadium': campo.title() if campo else '', 'home': home, 'away': away,
         'homeCrest': cr.get(home, ''), 'awayCrest': cr.get(away, ''),
-        'angueraHome': ang_home, 'status': status, 'score': score, 'goals': goals,
+        'angueraHome': ang_home, 'status': status, 'score': score, 'realScore': real, 'goals': goals,
     }
 
 

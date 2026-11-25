@@ -384,12 +384,15 @@ function seasonStatsHTML(){
   if (!FCF) return '';
   const played = FCF.matches.filter(a => a.score); if (!played.length) return '';
   let v = 0, e = 0, d = 0, gf = 0, gc = 0; const sc = {};
-  played.forEach(a => { const f = a.angueraHome ? a.score[0] : a.score[1], c = a.angueraHome ? a.score[1] : a.score[0]; gf += f; gc += c; f > c ? v++ : f < c ? d++ : e++;
-    a.goals.filter(g => g.ours && g.name).forEach(g => { const k = g.name + '#' + g.dorsal; sc[k] = (sc[k] || 0) + 1; }); });
-  const top = Object.entries(sc).sort((x, y) => y[1] - x[1]).slice(0, 8);
+  played.forEach(a => { const f = a.angueraHome ? a.score[0] : a.score[1], c = a.angueraHome ? a.score[1] : a.score[0]; f > c ? v++ : f < c ? d++ : e++;
+    const r = a.realScore || a.score; gf += a.angueraHome ? r[0] : r[1]; gc += a.angueraHome ? r[1] : r[0];
+    a.goals.filter(g => g.ours && g.name).forEach(g => { const s0 = sc[g.name] || (sc[g.name] = { n: 0, dors: {} }); s0.n++; if (g.dorsal) s0.dors[g.dorsal] = (s0.dors[g.dorsal] || 0) + 1; }); });
+  const top = Object.entries(sc).sort((x, y) => y[1].n - x[1].n).slice(0, 8)
+    .map(([nm, o]) => [nm + '#' + (Object.entries(o.dors).sort((x, y) => y[1] - x[1])[0] || [''])[0], o.n]);
   return '<section class="sec"><div class="shead"><h2>La temporada en números</h2></div><div class="stats">' +
-    [['PJ', played.length, ''], ['G', v, 'v'], ['E', e, ''], ['P', d, 'd'], ['GF', gf, ''], ['GC', gc, '']].map(x => '<div class="stat ' + x[2] + '"><b>' + x[1] + '</b><span>' + x[0] + '</span></div>').join('') + '</div>' +
-    (top.length ? '<div class="scorers">' + top.map(([k, n]) => { const [nm, dn] = k.split('#'); return '<div class="scorer"><span class="n">' + esc(dn || '·') + '</span>' + esc(nm) + ' <i>× ' + n + '</i></div>'; }).join('') + '</div>' : '') + '</section>';
+    [['PJ', played.length, ''], ['G', v, 'v'], ['E', e, ''], ['P', d, 'd'], ['GF*', gf, ''], ['GC*', gc, '']].map(x => '<div class="stat ' + x[2] + '"><b>' + x[1] + '</b><span>' + x[0] + '</span></div>').join('') + '</div>' +
+    (top.length ? '<div class="scorers">' + top.map(([k, n]) => { const [nm, dn] = k.split('#'); return '<div class="scorer"><span class="n">' + esc(dn || '·') + '</span>' + esc(nm) + ' <i>× ' + n + '</i></div>'; }).join('') + '</div>' : '') +
+    '<div style="padding:8px max(4vw,18px) 0;color:var(--mute);font-size:12px">* Goles reales de las actas. En el marcador oficial la diferencia máxima es de 10.</div></section>';
 }
 const BALL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="vertical-align:-3px"><circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 5h-5L8 10z"/></svg>';
 function fichaHTML(m){
@@ -397,7 +400,7 @@ function fichaHTML(m){
   const d = a.date ? new Date(a.date + 'T12:00:00') : null;
   const goals = a.goals || [];
   return '<section class="sec"><div class="shead"><h2>Ficha del partido</h2><span class="lnk" style="cursor:default">Acta FCF</span></div><div class="ficha">' +
-    '<div class="finfo">' + (a.postponed ? '<span class="res" style="background:#B45309">APLAZADO</span>' : '') + '<span><b>' + (d ? DIAS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] : '') + '</b> · ' + esc(a.time) + 'h</span><span>' + esc(a.stadium) + '</span><span>' + (a.angueraHome ? 'En casa' : 'Fuera') + '</span></div>' +
+    '<div class="finfo">' + (m.real ? '<span><b>Oficial ' + esc(m.score) + '</b> · goles reales ' + esc(m.real) + '</span>' : '') + (a.postponed ? '<span class="res" style="background:#B45309">APLAZADO</span>' : '') + '<span><b>' + (d ? DIAS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] : '') + '</b> · ' + esc(a.time) + 'h</span><span>' + esc(a.stadium) + '</span><span>' + (a.angueraHome ? 'En casa' : 'Fuera') + '</span></div>' +
     (goals.length ? goals.map(g => g.ours
       ? '<div class="goal"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">' + BALL + ' ' + esc(g.name || 'Gol') + (g.dorsal ? ' <i>#' + esc(g.dorsal) + '</i>' : '') + '</span><span class="s">' + esc(g.score) + '</span></div>'
       : '<div class="goal riv"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">Gol del rival</span><span class="s">' + esc(g.score) + '</span></div>').join('')
@@ -414,9 +417,14 @@ function mergeFCF(){
       const t = teams(m.title), angFirst = t ? isAng(t[0]) : a.angueraHome;
       const f = a.angueraHome ? a.score[0] : a.score[1], c = a.angueraHome ? a.score[1] : a.score[0];
       m.score = angFirst ? f + '-' + c : c + '-' + f; m.res = f > c ? 'V' : f < c ? 'D' : 'E';
+      const r = a.realScore || a.score, rf = a.angueraHome ? r[0] : r[1], rc = a.angueraHome ? r[1] : r[0];
+      if (rf !== f || rc !== c) m.real = angFirst ? rf + '-' + rc : rc + '-' + rf;
     }
-    if (!m.date && a.date) m.date = Date.parse(a.date + 'T12:00:00');
+    if (a.date) m.date = Date.parse(a.date + 'T12:00:00');
   });
+  // "Últimos partidos": por fecha en que se jugó. Los que no tienen fecha mantienen su orden, detrás.
+  const pos = new Map(DATA.map((m, i) => [m, i]));
+  DATA.sort((x, y) => (y.date || 0) - (x.date || 0) || pos.get(x) - pos.get(y));
 }
 function bind(root){
   root.querySelectorAll('[data-id]').forEach(el => el.addEventListener('click', () => openMatch(DATA.find(m => m.id === el.dataset.id), false, true)));
