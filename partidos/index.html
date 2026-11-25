@@ -40,7 +40,40 @@ body.demo .demotag{display:inline-block}
 
 /* Escudos y equipos */
 .crest{display:block;border-radius:18%;box-shadow:0 6px 18px #0009;object-fit:cover}
-.kit{border-radius:50%;border:3px solid #fff;display:grid;place-items:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;flex:none}
+.kit{border-radius:50%;border:3px solid #fff;display:grid;place-items:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;flex:none;position:relative;overflow:hidden}
+.kit img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:12%}
+/* Ficha FCF */
+.next{margin:0 max(4vw,18px);border-radius:18px;background:linear-gradient(110deg,#1E2F9E 0%,#12161c 60%);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px}
+.next .when{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.next .when b{font:900 26px/1 'Barlow Condensed',sans-serif;text-transform:uppercase}
+.next .when span{color:var(--acc);font-weight:800}
+.next .row2{display:flex;align-items:center;gap:12px}
+.next .row2 .nm{font-weight:700;font-size:17px;line-height:1.2}
+.next .where{color:var(--mute);font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:0 max(4vw,18px)}
+.stat{background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center}
+.stat b{display:block;font:900 24px/1 'Barlow Condensed',sans-serif}
+.stat span{font-size:11px;color:var(--mute);font-weight:700}
+.stat.v b{color:#4ADE80}.stat.d b{color:#FB7185}
+.scorers{display:flex;gap:8px;overflow-x:auto;padding:12px max(4vw,18px) 2px;scrollbar-width:none}
+.scorer{flex:none;display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:6px 12px 6px 6px;font-weight:700;font-size:14px;white-space:nowrap}
+.scorer .n{width:30px;height:30px;border-radius:15px;background:var(--acc);color:var(--accInk);display:grid;place-items:center;font:900 15px 'Barlow Condensed',sans-serif}
+.scorer i{font-style:normal;color:var(--mute);font-weight:600}
+.ficha{margin:0 max(4vw,18px);background:var(--s1);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.finfo{display:flex;flex-wrap:wrap;gap:6px 14px;padding:14px 16px;color:var(--mute);font-size:14px;border-bottom:1px solid var(--line)}
+.finfo b{color:var(--ink)}
+.res{font:800 12px/1 Barlow,sans-serif;padding:5px 8px;border-radius:6px;color:#fff;letter-spacing:.03em}
+.goal{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.goal:last-child{border-bottom:0}
+.goal .m{width:36px;font:900 18px 'Barlow Condensed',sans-serif;color:var(--acc);font-variant-numeric:tabular-nums}
+.goal .w{flex:1;font-weight:700}
+.goal .w i{font-style:normal;color:var(--mute);font-weight:600}
+.goal .s{font:800 15px 'Barlow Condensed',sans-serif;color:var(--mute);white-space:nowrap}
+.goal.riv{opacity:.55}
+.goal.riv .m{color:var(--mute)}
+.cell.novid{opacity:.6;cursor:default}
+.cell.pend{background:transparent;border-style:dashed;cursor:default}
+.cell em{font-style:normal;font:800 13px/1 'Barlow Condensed',sans-serif;margin-top:3px}
 .team{display:flex;flex-direction:column;align-items:center;gap:8px;width:110px;text-align:center}
 .team .nm{font:800 20px/1.05 'Barlow Condensed',sans-serif;text-transform:uppercase;text-wrap:balance}
 .vsrow{display:flex;align-items:center;justify-content:center;gap:6px}
@@ -285,19 +318,27 @@ const KITS = [
   [/grama|gramanet|gramenet/, 'GRA', 'linear-gradient(180deg,#1530D6 60%,#fff 60%)', '#fff'],
   [/alzamora/, 'ALZ', 'repeating-linear-gradient(135deg,#E30613 0 8px,#fff 8px 12px)', '#fff']
 ];
-const code = n => { const w = norm(n).replace(/\b(cf|c\.f\.|ue|ud|fc|ce|ef|ff|fe|club|futbol|de|del|la|el)\b/g, ' ').trim().split(/\s+/)[0] || '?'; return w.slice(0, 3).toUpperCase(); };
-function badge(name, size){
+const STOP = /\b(cf|c\.f|ue|u\.e|ud|fc|ce|c\.e|ef|ff|fe|club|esp|futbol|fundacio|esportiva|escola|de|del|la|el)\b/g;
+const code = n => { const w = norm(n).replace(/[.,]/g, ' ').replace(STOP, ' ').trim().split(/\s+/)[0] || '?'; return w.slice(0, 3).toUpperCase(); };
+const STOPW = new Set(['cf', 'c', 'f', 'ue', 'u', 'e', 'ud', 'fc', 'ce', 'ef', 'ff', 'fe', 'club', 'esp', 'futbol', 'fundacio', 'esportiva', 'escola', 'de', 'del', 'la', 'el']);
+const shortName = n => { if (isAng(n)) return 'Anguera'; const w = String(n).split(/[\s.,]+/).filter(x => x && !STOPW.has(norm(x))); return w.join(' ').toLowerCase().replace(/(^|[\s-])\S/g, c => c.toUpperCase()) || String(n); };
+const RES = { V: ['VICTORIA', '#16A34A'], E: ['EMPATE', '#6b7480'], D: ['DERROTA', '#E0283E'] };
+let FCF = null, FCFJ = {};
+const crestOf = (m, name) => { const a = m && m.fcf; if (!a || isAng(name)) return ''; return a.angueraHome ? a.awayCrest : a.homeCrest; };
+function badge(name, size, crest){
   if (isAng(name)) return '<img class="crest" src="' + CREST + '" alt="PB Anguera" style="width:' + size + 'px;height:' + Math.round(size * 1.02) + 'px">';
   const k = KITS.find(x => x[0].test(norm(name)));
   const [c, bg, ink] = k ? [k[1], k[2], k[3]] : [code(name), '#3a414c', '#fff'];
-  return '<div class="kit" role="img" aria-label="' + esc(name) + '" style="width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size * .33) + 'px;background:' + bg + ';color:' + ink + ';text-shadow:' + (ink === '#fff' ? '0 1px 3px #000' : 'none') + '">' + esc(c) + '</div>';
+  return '<div class="kit" role="img" aria-label="' + esc(name) + '" style="width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size * .33) + 'px;background:' + bg + ';color:' + ink + ';text-shadow:' + (ink === '#fff' ? '0 1px 3px #000' : 'none') + '">' + esc(c) +
+    (/^https:\/\/files\.fcf\.cat\//.test(crest || '') ? '<img alt="" loading="lazy" src="' + esc(crest) + '" onerror="this.remove()">' : '') + '</div>';
 }
 const rival = m => { const t = teams(m.title); return t ? (isAng(t[0]) ? t[1] : t[0]) : ''; };
 function matchup(m, size){
   const t = teams(m.title);
   if (!t) return '<div class="vsrow">' + badge('Anguera', size) + '</div><div class="team" style="width:auto"><div class="nm">' + esc(m.title) + '</div></div>';
   const mid = m.score ? '<div class="vsx sc">' + esc(m.score.replace('-', ' – ')) + '</div>' : '<div class="vsx">VS</div>';
-  return '<div class="vsrow">' + t.map((n, i) => (i ? mid : '') + '<div class="team">' + badge(n, size) + '<div class="nm">' + esc(isAng(n) ? 'Anguera' : n) + '</div></div>').join('') + '</div>';
+  return '<div class="vsrow">' + t.map((n, i) => (i ? mid : '') + '<div class="team">' + badge(n, size, crestOf(m, n)) + '<div class="nm">' + esc(isAng(n) ? 'Anguera' : n) + '</div></div>').join('') + '</div>' +
+    (m.res ? '<div style="display:flex;justify-content:center"><span class="res" style="background:' + RES[m.res][1] + '">' + RES[m.res][0] + '</span></div>' : '');
 }
 
 // ---- Tarjetas y celdas ----
@@ -306,14 +347,76 @@ function card(m){
   const label = isNew(m) && !s ? '<span class="badge new">NUEVO</span>' : (m.jornada ? '<span class="badge">J' + m.jornada + '</span>' : (m.date ? '<span class="badge">' + esc(fmtDate(m.date)) + '</span>' : ''));
   return '<button class="card" data-id="' + esc(m.id) + '"><div class="thumb"><img loading="lazy" alt="" src="' + thumb(m.videos[0].id) + '" onerror="this.remove()">' + label +
     '<span class="dur">' + m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' cuartos') + '</span>' + (s ? '<span class="seen"></span>' : '') + '</div>' +
-    (t ? '<div class="mini">' + badge(t[0], 36) + '<span class="vs' + (m.score ? ' sc' : '') + '">' + esc(m.score || 'VS') + '</span>' + badge(t[1], 36) + '</div>' : '<div class="mini">' + badge('Anguera', 36) + '</div>') +
+    (t ? '<div class="mini">' + badge(t[0], 36, crestOf(m, t[0])) + '<span class="vs' + (m.score ? ' sc' : '') + '"' + (m.res ? ' style="color:' + (m.res === 'V' ? '#4ADE80' : m.res === 'D' ? '#FB7185' : 'var(--mute)') + '"' : '') + '>' + esc(m.score || 'VS') + '</span>' + badge(t[1], 36, crestOf(m, t[1])) + '</div>' : '<div class="mini">' + badge('Anguera', 36) + '</div>') +
     '<div class="ctitle">' + esc(m.title) + '</div></button>';
 }
 const rail = (title, list, more) => list.length ? '<section class="sec"><div class="shead"><h2>' + esc(title) + '</h2>' + (more ? '<button class="lnk" data-season="' + esc(more) + '">Ver todos</button>' : '') + '</div><div class="row">' + list.map(card).join('') + '</div></section>' : '';
 function seasonGrid(group){
-  const list = DATA.filter(m => m.group === group).slice().sort((a, b) => (a.jornada || 99) - (b.jornada || 99) || a.sort - b.sort);
-  const last = DATA.find(m => m.group === group);
-  return '<div class="grid">' + list.map(m => '<button class="cell' + (m === last ? ' last' : '') + (seen.includes(m.id) && m !== last ? ' seen' : '') + '" data-id="' + esc(m.id) + '"><b>' + (m.jornada ? 'J' + m.jornada : '★') + '</b><span>' + esc(m.jornada ? code(rival(m) || m.title) : (rival(m) || m.title)) + '</span></button>').join('') + '</div>';
+  const vids = DATA.filter(m => m.group === group);
+  const last = vids.find(m => m.jornada) || vids[0];
+  const cellFor = m => '<button class="cell' + (m === last ? ' last' : '') + (seen.includes(m.id) && m !== last ? ' seen' : '') + '" data-id="' + esc(m.id) + '"><b>' + (m.jornada ? 'J' + m.jornada : '★') + '</b><span>' + esc(m.jornada ? code(rival(m) || m.title) : (rival(m) || m.title)) + '</span>' + (m.score ? '<em' + (m.res && m !== last ? ' style="color:' + (m.res === 'V' ? '#4ADE80' : m.res === 'D' ? '#FB7185' : 'inherit') + '"' : '') + '>' + esc(m.score) + '</em>' : '') + '</button>';
+  if (FCF && FCF.group === group) {
+    const cells = FCF.matches.map(a => {
+      const m = vids.find(x => x.fcf === a), riv = a.angueraHome ? a.away : a.home;
+      if (m) return cellFor(m);
+      const sc = a.score ? a.score[0] + '-' + a.score[1] : '', f = a.score ? (a.angueraHome ? a.score[0] : a.score[1]) : 0, c = a.score ? (a.angueraHome ? a.score[1] : a.score[0]) : 0, col = a.score ? (f > c ? '#4ADE80' : f < c ? '#FB7185' : '') : '';
+      const d = a.date ? new Date(a.date + 'T12:00:00') : null;
+      return '<div class="cell ' + (a.score ? 'novid' : 'pend') + '" title="' + esc(shortName(riv) + (a.score ? ' · vídeo aún no subido' : '')) + '"><b>J' + a.jornada + '</b><span>' + esc(code(riv)) + '</span><em' + (col ? ' style="color:' + col + '"' : '') + '>' + esc(sc || (d ? d.getDate() + ' ' + MONTHS[d.getMonth()] : '')) + '</em></div>';
+    });
+    vids.filter(m => !m.fcf).forEach(m => cells.push(cellFor(m)));
+    return '<div class="grid">' + cells.join('') + '</div>';
+  }
+  const list = vids.slice().sort((a, b) => (a.jornada || 99) - (b.jornada || 99) || a.sort - b.sort);
+  return '<div class="grid">' + list.map(cellFor).join('') + '</div>';
+}
+// ---- Próximo partido, números de la temporada y goleadores (de las actas de la FCF) ----
+const DIAS = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+function nextMatchHTML(){
+  if (!FCF) return '';
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const a = FCF.matches.find(x => !x.score && x.date && new Date(x.date + 'T23:59:00') >= today); if (!a) return '';
+  const d = new Date(a.date + 'T12:00:00'), riv = a.angueraHome ? a.away : a.home, rc = a.angueraHome ? a.awayCrest : a.homeCrest;
+  return '<section class="sec"><div class="shead"><h2>Próximo partido</h2></div><div class="next">' +
+    '<div class="when"><b>' + DIAS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + '</b><span>' + esc(a.time) + 'h · J' + a.jornada + '</span></div>' +
+    '<div class="row2">' + badge('Anguera', 44) + '<span class="cond" style="font-weight:900;font-size:20px">VS</span>' + badge(riv, 44, rc) + '<div class="nm">' + esc(shortName(riv)) + '<div class="where">' + (a.angueraHome ? 'En casa' : 'Fuera') + ' · ' + esc(a.stadium) + '</div></div></div></div></section>';
+}
+function seasonStatsHTML(){
+  if (!FCF) return '';
+  const played = FCF.matches.filter(a => a.score); if (!played.length) return '';
+  let v = 0, e = 0, d = 0, gf = 0, gc = 0; const sc = {};
+  played.forEach(a => { const f = a.angueraHome ? a.score[0] : a.score[1], c = a.angueraHome ? a.score[1] : a.score[0]; gf += f; gc += c; f > c ? v++ : f < c ? d++ : e++;
+    a.goals.filter(g => g.ours && g.name).forEach(g => { const k = g.name + '#' + g.dorsal; sc[k] = (sc[k] || 0) + 1; }); });
+  const top = Object.entries(sc).sort((x, y) => y[1] - x[1]).slice(0, 8);
+  return '<section class="sec"><div class="shead"><h2>La temporada en números</h2></div><div class="stats">' +
+    [['PJ', played.length, ''], ['G', v, 'v'], ['E', e, ''], ['P', d, 'd'], ['GF', gf, ''], ['GC', gc, '']].map(x => '<div class="stat ' + x[2] + '"><b>' + x[1] + '</b><span>' + x[0] + '</span></div>').join('') + '</div>' +
+    (top.length ? '<div class="scorers">' + top.map(([k, n]) => { const [nm, dn] = k.split('#'); return '<div class="scorer"><span class="n">' + esc(dn || '·') + '</span>' + esc(nm) + ' <i>× ' + n + '</i></div>'; }).join('') + '</div>' : '') + '</section>';
+}
+const BALL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="vertical-align:-3px"><circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 5h-5L8 10z"/></svg>';
+function fichaHTML(m){
+  const a = m.fcf; if (!a) return '';
+  const d = a.date ? new Date(a.date + 'T12:00:00') : null;
+  const goals = a.goals || [];
+  return '<section class="sec"><div class="shead"><h2>Ficha del partido</h2><span class="lnk" style="cursor:default">Acta FCF</span></div><div class="ficha">' +
+    '<div class="finfo"><span><b>' + (d ? DIAS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] : '') + '</b> · ' + esc(a.time) + 'h</span><span>' + esc(a.stadium) + '</span><span>' + (a.angueraHome ? 'En casa' : 'Fuera') + '</span></div>' +
+    (goals.length ? goals.map(g => g.ours
+      ? '<div class="goal"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">' + BALL + ' ' + esc(g.name || 'Gol') + (g.dorsal ? ' <i>#' + esc(g.dorsal) + '</i>' : '') + '</span><span class="s">' + esc(g.score) + '</span></div>'
+      : '<div class="goal riv"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">Gol del rival</span><span class="s">' + esc(g.score) + '</span></div>').join('')
+      : '<div class="goal"><span class="w" style="color:var(--mute);font-weight:600">' + (a.score ? 'Sin goles registrados en el acta' : 'Partido pendiente') + '</span></div>') +
+    '</div></section>';
+}
+function mergeFCF(){
+  if (!FCF || !FCF.matches) return;
+  FCFJ = {}; FCF.matches.forEach(a => { FCFJ[a.jornada] = a; });
+  DATA.forEach(m => {
+    if (!m.jornada || m.group !== FCF.group) return;
+    const a = FCFJ[m.jornada]; if (!a) return; m.fcf = a;
+    if (a.score) {
+      const t = teams(m.title), angFirst = t ? isAng(t[0]) : a.angueraHome;
+      const f = a.angueraHome ? a.score[0] : a.score[1], c = a.angueraHome ? a.score[1] : a.score[0];
+      m.score = angFirst ? f + '-' + c : c + '-' + f; m.res = f > c ? 'V' : f < c ? 'D' : 'E';
+    }
+    if (!m.date && a.date) m.date = Date.parse(a.date + 'T12:00:00');
+  });
 }
 function bind(root){
   root.querySelectorAll('[data-id]').forEach(el => el.addEventListener('click', () => openMatch(DATA.find(m => m.id === el.dataset.id), false, true)));
@@ -329,7 +432,9 @@ function renderHome(push){
   const cont = seen.map(id => DATA.find(m => m.id === id)).filter(Boolean).slice(0, 12);
   const gs = groups();
   let h = '<div class="view"><section class="hero" id="hero"></section>';
+  h += nextMatchHTML();
   h += rail('Últimos partidos', DATA.slice(0, 12));
+  h += seasonStatsHTML();
   h += rail('Sigue viendo', cont);
   if (gs[0]) h += '<section class="sec"><div class="shead"><h2>Temporada ' + esc(gs[0]) + '</h2><button class="lnk" data-season="' + esc(gs[0]) + '">Ver temporada</button></div>' + seasonGrid(gs[0]) + '</section>';
   gs.slice(1).forEach(g => { h += rail(g, DATA.filter(m => m.group === g), g); });
@@ -395,7 +500,7 @@ function openMatch(m, noPush, fs){
     '<div class="wbody">' + (n > 1 ? '<div class="qtabs" style="--n:' + Math.min(n, 6) + '">' + m.videos.map((v, i) => { const q = partName(v.name).match(/^Quart (\d)$/); return '<button class="qtab" data-q="' + i + '" title="' + esc(partName(v.name)) + '">' + (q ? 'Q' + q[1] : i + 1) + '</button>'; }).join('') + '</div>' : '') +
     '<div class="fsrow"><button class="btn pri" id="fsGo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Pantalla completa</button><button class="btn zbtn zt" aria-pressed="false">' + ZICO + 'Zoom</button></div>' +
     '<div class="two"><button class="btn" id="share">Copiar enlace</button><a class="btn" id="open" target="_blank" rel="noopener">Abrir en Drive</a></div></div>' +
-    rail('Más de ' + (m.group || 'la temporada'), more) + '</div>';
+    fichaHTML(m) + rail('Más de ' + (m.group || 'la temporada'), more) + '</div>';
   document.querySelectorAll('.qtab').forEach(b => b.addEventListener('click', () => { play(+b.dataset.q); enterFS(); }));
   $('#fsGo').addEventListener('click', enterFS);
   document.querySelectorAll('.zt').forEach(b => b.addEventListener('click', () => setZoomMode(!zoomMode)));
@@ -406,7 +511,7 @@ function openMatch(m, noPush, fs){
   $('#fsPrev').addEventListener('click', () => play(Math.max(0, part - 1)));
   $('#fsNext').addEventListener('click', () => play(Math.min(n - 1, part + 1)));
   $('#share').addEventListener('click', () => share(m));
-  bind($('#app').querySelector('.sec') || document.createElement('div'));
+  $('#app').querySelectorAll('.sec').forEach(bind);
   play(0);
   window.scrollTo(0, 0);
   if (!noPush) history.pushState(null, '', '?m=' + encodeURIComponent(m.id));
@@ -663,7 +768,8 @@ function load(){
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(res => { if (!res.matches || !res.matches.length) throw 0; return res.matches; })
     .catch(() => { DEMO = true; document.body.classList.add('demo'); return SAMPLE; })
-    .then(list => { DATA = list; route(); setTimeout(() => $('#splash').classList.add('off'), 200); });
+    .then(list => { DATA = list; return fetch('fcf.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null); })
+    .then(f => { FCF = f; mergeFCF(); route(); setTimeout(() => $('#splash').classList.add('off'), 200); });
 }
 
 // ---- Eventos ----

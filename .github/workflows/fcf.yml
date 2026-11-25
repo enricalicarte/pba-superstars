@@ -1,0 +1,41 @@
+name: Actualizar datos FCF
+
+# Descarga las actas del PB Anguera de la web de la FCF y publica SOLO un resumen
+# (partidos/fcf.json): resultados, fechas, campos y goles con nombre de pila y dorsal.
+# Las actas completas se quedan en /tmp del servidor de GitHub y nunca se suben al repo.
+on:
+  schedule:
+    - cron: '17 19 * * 0'   # domingo ~20:17 (hora de Barcelona en invierno)
+    - cron: '17 7 * * 1'    # lunes ~08:17
+  workflow_dispatch:        # botón "Run workflow" para actualizar al momento
+
+permissions:
+  contents: write
+
+concurrency:
+  group: partidos
+  cancel-in-progress: false
+
+jobs:
+  fcf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar
+        run: pip install -r partidos/scripts/fcf/requirements.txt
+      - name: Descargar actas de la FCF
+        run: python partidos/scripts/fcf/scraper.py
+      - name: Crear el resumen para la web
+        run: python partidos/scripts/fcf_resumen.py /tmp/fcf-data partidos/fcf.json
+      - name: Guardar el resumen si ha cambiado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add partidos/fcf.json
+          if git diff --cached --quiet; then echo "Sin cambios"; exit 0; fi
+          git commit -m "Partidos: datos FCF actualizados"
+          git pull --rebase
+          git push

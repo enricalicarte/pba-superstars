@@ -1,0 +1,1123 @@
+{
+ "updated": "2026-11-25T10:11:55+00:00",
+ "competition": "Prebenjamí S8 · Grup 3",
+ "season": "2026-2027",
+ "group": "T26/27 S8",
+ "matches": [
+  {
+   "jornada": 1,
+   "date": "2026-10-03",
+   "time": "10:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "SISTRELLS C.F.",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001190063_6221_Sistrells_B.png",
+   "angueraHome": true,
+   "status": "FINALITZAT",
+   "score": [
+    10,
+    0
+   ],
+   "goals": [
+    {
+     "min": 3,
+     "score": "1-0",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 13,
+     "score": "2-0",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 15,
+     "score": "3-0",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 17,
+     "score": "4-0",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 21,
+     "score": "5-0",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 22,
+     "score": "6-0",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 23,
+     "score": "7-0",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 26,
+     "score": "8-0",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 32,
+     "score": "9-0",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 34,
+     "score": "10-0",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 38,
+     "score": "11-0",
+     "ours": true,
+     "dorsal": "5",
+     "name": "Sasha"
+    },
+    {
+     "min": 44,
+     "score": "12-0",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    }
+   ]
+  },
+  {
+   "jornada": 2,
+   "date": "2026-10-10",
+   "time": "11:00",
+   "stadium": "Camp De Futbol Mpal. Les Oliveres",
+   "home": "FUNDACIÓ ESPORTIVA GRAMA",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000574709_fgrama_200x200.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "FINALITZAT",
+   "score": [
+    0,
+    10
+   ],
+   "goals": [
+    {
+     "min": 2,
+     "score": "0-1",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 3,
+     "score": "0-2",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 8,
+     "score": "0-3",
+     "ours": true,
+     "dorsal": "5",
+     "name": "Harun"
+    },
+    {
+     "min": 15,
+     "score": "0-4",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 21,
+     "score": "0-5",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 25,
+     "score": "0-6",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 28,
+     "score": "0-7",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 36,
+     "score": "0-8",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 37,
+     "score": "0-9",
+     "ours": true,
+     "dorsal": "10",
+     "name": "Thiago"
+    },
+    {
+     "min": 38,
+     "score": "0-10",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 44,
+     "score": "0-11",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 48,
+     "score": "0-12",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    }
+   ]
+  },
+  {
+   "jornada": 3,
+   "date": "2026-11-24",
+   "time": "18:55",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "LLOREDA, C.F.",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000897895_cflloreda_200.png",
+   "angueraHome": true,
+   "status": "FINALITZAT",
+   "score": [
+    11,
+    1
+   ],
+   "goals": [
+    {
+     "min": 1,
+     "score": "1-0",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 15,
+     "score": "2-0",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 25,
+     "score": "3-0",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 26,
+     "score": "4-0",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 31,
+     "score": "5-0",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 32,
+     "score": "6-0",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 34,
+     "score": "7-0",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 35,
+     "score": "8-0",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 37,
+     "score": "9-0",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 42,
+     "score": "10-0",
+     "ours": true,
+     "dorsal": "2",
+     "name": "Ilyas"
+    },
+    {
+     "min": 45,
+     "score": "11-0",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 47,
+     "score": "11-1",
+     "ours": false
+    }
+   ]
+  },
+  {
+   "jornada": 4,
+   "date": "2026-10-25",
+   "time": "11:30",
+   "stadium": "Camp De Futbol Cem Can Zam (2)",
+   "home": "SINGUERLIN, C.F.",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001162942_SinguerlinPNG.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "FINALITZAT",
+   "score": [
+    0,
+    10
+   ],
+   "goals": [
+    {
+     "min": 9,
+     "score": "0-1",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 16,
+     "score": "0-2",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 17,
+     "score": "0-3",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 19,
+     "score": "0-4",
+     "ours": true,
+     "dorsal": "5",
+     "name": "Sasha"
+    },
+    {
+     "min": 22,
+     "score": "0-5",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 24,
+     "score": "0-6",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 29,
+     "score": "0-7",
+     "ours": true,
+     "dorsal": "10",
+     "name": "Thiago"
+    },
+    {
+     "min": 30,
+     "score": "0-8",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 32,
+     "score": "0-9",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 35,
+     "score": "0-10",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 45,
+     "score": "0-11",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 46,
+     "score": "0-12",
+     "ours": true,
+     "dorsal": "10",
+     "name": "Thiago"
+    },
+    {
+     "min": 47,
+     "score": "0-13",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    }
+   ]
+  },
+  {
+   "jornada": 5,
+   "date": "2026-10-31",
+   "time": "10:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "SANT ANDREU, U.E",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000573790_standreu_200x200.png",
+   "angueraHome": true,
+   "status": "FINALITZAT",
+   "score": [
+    9,
+    3
+   ],
+   "goals": [
+    {
+     "min": 1,
+     "score": "0-1",
+     "ours": false
+    },
+    {
+     "min": 5,
+     "score": "1-1",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 11,
+     "score": "2-1",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 18,
+     "score": "2-2",
+     "ours": false
+    },
+    {
+     "min": 20,
+     "score": "3-2",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 26,
+     "score": "4-2",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 29,
+     "score": "5-2",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 36,
+     "score": "6-2",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 39,
+     "score": "7-2",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 42,
+     "score": "8-2",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 44,
+     "score": "9-2",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 47,
+     "score": "9-3",
+     "ours": false
+    }
+   ]
+  },
+  {
+   "jornada": 6,
+   "date": "2026-11-07",
+   "time": "10:20",
+   "stadium": "Camp De Futbol Mpal. Pere Gol",
+   "home": "FUNDACIÓ FUTBOL BADALONA",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001018810_escudo_ffbadalona_1.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "FINALITZAT",
+   "score": [
+    2,
+    12
+   ],
+   "goals": [
+    {
+     "min": 1,
+     "score": "0-1",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 2,
+     "score": "0-2",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 9,
+     "score": "1-2",
+     "ours": false
+    },
+    {
+     "min": 14,
+     "score": "1-3",
+     "ours": true,
+     "dorsal": "1",
+     "name": "Thiago"
+    },
+    {
+     "min": 14,
+     "score": "1-4",
+     "ours": true,
+     "dorsal": "1",
+     "name": "Thiago"
+    },
+    {
+     "min": 17,
+     "score": "2-4",
+     "ours": false
+    },
+    {
+     "min": 25,
+     "score": "2-5",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 27,
+     "score": "2-6",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 28,
+     "score": "2-7",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 29,
+     "score": "2-8",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 32,
+     "score": "2-9",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 37,
+     "score": "2-10",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 38,
+     "score": "2-11",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 40,
+     "score": "2-12",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 43,
+     "score": "2-13",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 43,
+     "score": "2-14",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    }
+   ]
+  },
+  {
+   "jornada": 7,
+   "date": "2026-11-14",
+   "time": "10:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "BUFALA, C.F.",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000894175_bufalacf_200.png",
+   "angueraHome": true,
+   "status": "FINALITZAT",
+   "score": [
+    12,
+    2
+   ],
+   "goals": [
+    {
+     "min": 3,
+     "score": "1-0",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 14,
+     "score": "1-1",
+     "ours": false
+    },
+    {
+     "min": 17,
+     "score": "2-1",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 21,
+     "score": "3-1",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 22,
+     "score": "4-1",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 23,
+     "score": "5-1",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 24,
+     "score": "6-1",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 30,
+     "score": "7-1",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 34,
+     "score": "8-1",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 36,
+     "score": "9-1",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 40,
+     "score": "10-1",
+     "ours": true,
+     "dorsal": "10",
+     "name": "Thiago"
+    },
+    {
+     "min": 42,
+     "score": "11-1",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 43,
+     "score": "11-2",
+     "ours": false
+    },
+    {
+     "min": 46,
+     "score": "12-2",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    }
+   ]
+  },
+  {
+   "jornada": 8,
+   "date": "2026-11-21",
+   "time": "09:00",
+   "stadium": "Camp De Futbol Escola Garbí I Pere Vergés",
+   "home": "ESCOLA DE FUTBOL STOITCHKOV-RACING SARRIA",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "FINALITZAT",
+   "score": [
+    0,
+    10
+   ],
+   "goals": [
+    {
+     "min": 3,
+     "score": "0-1",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 6,
+     "score": "0-2",
+     "ours": true,
+     "dorsal": "10",
+     "name": "Thiago"
+    },
+    {
+     "min": 10,
+     "score": "0-3",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 14,
+     "score": "0-4",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 22,
+     "score": "0-5",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 27,
+     "score": "0-6",
+     "ours": true,
+     "dorsal": "9",
+     "name": "Julen"
+    },
+    {
+     "min": 30,
+     "score": "0-7",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 31,
+     "score": "0-8",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    },
+    {
+     "min": 32,
+     "score": "0-9",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 39,
+     "score": "0-10",
+     "ours": true,
+     "dorsal": "4",
+     "name": "Nacho"
+    },
+    {
+     "min": 40,
+     "score": "0-11",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 45,
+     "score": "0-12",
+     "ours": true,
+     "dorsal": "8",
+     "name": "Marc"
+    },
+    {
+     "min": 47,
+     "score": "0-13",
+     "ours": true,
+     "dorsal": "11",
+     "name": "Gerard"
+    },
+    {
+     "min": 48,
+     "score": "0-14",
+     "ours": true,
+     "dorsal": "6",
+     "name": "Alex"
+    }
+   ]
+  },
+  {
+   "jornada": 9,
+   "date": "2026-11-28",
+   "time": "11:15",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "UNIFICACION LLEFIA,CF.",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000879078_llefia_200.png",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 10,
+   "date": "2026-12-12",
+   "time": "11:15",
+   "stadium": "Camp De Futbol Cem Fort-Pienc",
+   "home": "ESCOLA DE FUTBOL PONT MARINA",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000484919_ESCOLA_DE_FUTBOL_PONT_MARINA_copia.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 11,
+   "date": "2026-12-19",
+   "time": "10:30",
+   "stadium": "Camp De Futbol Cem Can Drago",
+   "home": "ALZAMORA, C.F.",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223467_ALZAMORA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 12,
+   "date": "2027-01-09",
+   "time": "13:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "CANYELLES,C.E.",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000741560_canyelles_200x200.png",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 13,
+   "date": "2027-01-16",
+   "time": "09:00",
+   "stadium": "Camp De Futbol Cem Clot De La Mel",
+   "home": "VILA OLIMPICA CLUB ESP.",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000586311_cevo_200x200.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 14,
+   "date": "2027-01-23",
+   "time": "12:00",
+   "stadium": "Camp De Futbol Zem Can Cabanyes",
+   "home": "SISTRELLS C.F.",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001190063_6221_Sistrells_B.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 15,
+   "date": "2027-01-30",
+   "time": "13:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "FUNDACIÓ ESPORTIVA GRAMA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000574709_fgrama_200x200.png",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 16,
+   "date": "2027-02-13",
+   "time": "13:20",
+   "stadium": "Camp De Futbol Mpal. Lloreda",
+   "home": "LLOREDA, C.F.",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000897895_cflloreda_200.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 17,
+   "date": "2027-02-20",
+   "time": "13:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "SINGUERLIN, C.F.",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001162942_SinguerlinPNG.png",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 18,
+   "date": "2027-02-27",
+   "time": "09:00",
+   "stadium": "Camp De Futbol Mpal. Del Centenari-Aiss",
+   "home": "SANT ANDREU, U.E",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000573790_standreu_200x200.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 19,
+   "date": "2027-03-06",
+   "time": "13:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "FUNDACIÓ FUTBOL BADALONA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001018810_escudo_ffbadalona_1.png",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 20,
+   "date": "2027-03-13",
+   "time": "10:00",
+   "stadium": "Camp De Futbol Zem Bufalà",
+   "home": "BUFALA, C.F.",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000894175_bufalacf_200.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 21,
+   "date": "2027-03-20",
+   "time": "13:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "ESCOLA DE FUTBOL STOITCHKOV-RACING SARRIA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 22,
+   "date": "2027-04-03",
+   "time": "13:30",
+   "stadium": "Camp De Futbol Mpal. Llefià",
+   "home": "UNIFICACION LLEFIA,CF.",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000879078_llefia_200.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 23,
+   "date": "2027-04-10",
+   "time": "13:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "ESCOLA DE FUTBOL PONT MARINA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000484919_ESCOLA_DE_FUTBOL_PONT_MARINA_copia.png",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 24,
+   "date": "2027-04-17",
+   "time": "13:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "ALZAMORA, C.F.",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223467_ALZAMORA.png",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 25,
+   "date": "2027-04-24",
+   "time": "10:00",
+   "stadium": "Camp De Futbol Mpal. Canyelles (Bcn)",
+   "home": "CANYELLES,C.E.",
+   "away": "Pª BARC. ANGUERA",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000741560_canyelles_200x200.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "angueraHome": false,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  },
+  {
+   "jornada": 26,
+   "date": "2027-05-01",
+   "time": "13:00",
+   "stadium": "Camp De Futbol Escola Industrial",
+   "home": "Pª BARC. ANGUERA",
+   "away": "VILA OLIMPICA CLUB ESP.",
+   "homeCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0001223440_ANGUERA.png",
+   "awayCrest": "https://files.fcf.cat/escudos/clubes/escudos/00100_0000586311_cevo_200x200.png",
+   "angueraHome": true,
+   "status": "PENDENT",
+   "score": null,
+   "goals": []
+  }
+ ]
+}

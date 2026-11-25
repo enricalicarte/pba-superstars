@@ -1,0 +1,12 @@
+{
+  "start_url": "https://www.fcf.cat/es/partit/2026-2027/prebenjami-s8/grup-3/jornada-1/pa-barc-anguera-a-pb8-vs-sistrells-cf-b-pb8",
+  "team_slug": "pa-barc-anguera-a-pb8",
+  "delay_seconds": 2.0,
+  "max_pages": 400,
+  "output_dir": "/tmp/fcf-data",
+  "max_jornadas": 30,
+  "extra_views": [
+    "golejadors",
+    "equips"
+  ]
+}
