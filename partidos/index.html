@@ -113,19 +113,47 @@ body.demo .demotag{display:inline-block}
 .zoomon .zpad,.native .zpad{display:block}
 .vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform-origin:0 0;display:none;background:#000}
 .native video{display:block}.native iframe{display:none}
-.ctl{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;justify-content:space-between;pointer-events:none;background:linear-gradient(#0008,transparent 30%,transparent 62%,#000b);opacity:0;transition:opacity .25s}
+/* Controles del reproductor propio */
+.ctl{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;pointer-events:none;opacity:0;transition:opacity .25s}
+.ctl::before{content:"";position:absolute;inset:0;background:linear-gradient(#000a 0%,#0000 28%,#0000 55%,#000c 100%);z-index:-1}
 .native .ctl{display:flex}
 .ctl.on{opacity:1}
-.ctl.on button,.ctl.on input{pointer-events:auto}
-.cmid{flex:1;display:flex;align-items:center;justify-content:center;gap:clamp(24px,8vw,64px)}
-.cb{width:56px;height:56px;border-radius:50%;border:0;background:#000000a6;color:#fff;display:grid;place-items:center;cursor:pointer;font:800 13px Barlow,sans-serif;position:relative}
-.cb.big{width:72px;height:72px;background:var(--acc);color:var(--accInk)}
-.cb small{position:absolute;inset:0;display:grid;place-items:center;font-size:9px;font-weight:800;padding-top:2px}
-.cbot{display:flex;align-items:center;gap:10px;padding:0 12px 10px;color:#fff;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
-.cbot input{flex:1;accent-color:var(--acc);height:28px}
-.cbot button{height:34px;min-width:44px;border-radius:17px;border:0;background:#ffffff26;color:#fff;font:800 13px Barlow,sans-serif;cursor:pointer;padding:0 10px}
-.ripple{position:absolute;top:0;bottom:0;width:38%;z-index:3;display:grid;place-items:center;color:#fff;font:800 18px Barlow,sans-serif;opacity:0;transition:opacity .35s;pointer-events:none;background:radial-gradient(closest-side,#ffffff2e,transparent)}
-.ripple.l{left:0}.ripple.r{right:0}.ripple.on{opacity:1;transition:none}
+.ctl.on button,.ctl.on .bar{pointer-events:auto}
+.native .fsbar{display:none!important}
+.isnative .fsrow{display:none}
+.ctop{display:flex;align-items:center;gap:8px;padding:calc(10px + var(--sat,0px)) 12px 0}
+.stage:fullscreen .ctop,.stage:-webkit-full-screen .ctop,.stage.pfs .ctop{--sat:env(safe-area-inset-top)}
+.stage:fullscreen .cbot,.stage.pfs .cbot{padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+.qpill{background:var(--acc);color:var(--accInk);font:900 15px/1 'Barlow Condensed',sans-serif;padding:5px 8px;border-radius:6px;flex:none}
+.ctop .ttl{font-weight:700;font-size:14px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 3px #000}
+.ib{width:40px;height:40px;border-radius:20px;border:0;background:#ffffff1f;color:#fff;display:grid;place-items:center;cursor:pointer;flex:none;padding:0;font:800 13px Barlow,sans-serif}
+.ib:disabled{opacity:.3}
+.ib.on{background:var(--acc);color:var(--accInk)}
+.cmid{flex:1;display:flex;align-items:center;justify-content:center;gap:clamp(28px,10vw,80px)}
+.cb{width:52px;height:52px;border-radius:50%;border:0;background:#0000008c;color:#fff;display:grid;place-items:center;cursor:pointer;position:relative;padding:0;backdrop-filter:blur(4px)}
+.cb.big{width:68px;height:68px;background:#ffffffeb;color:#07090c}
+.cb small{position:absolute;inset:0;display:grid;place-items:center;font:800 9px Barlow,sans-serif;padding-top:2px}
+.cbot{padding:0 12px 8px}
+.bar{position:relative;height:26px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+.bar .tr{position:absolute;left:0;right:0;height:4px;border-radius:2px;background:#ffffff40;overflow:hidden;transition:height .15s}
+.bar:hover .tr,.bar.drag .tr{height:7px}
+.bar .bf{position:absolute;left:0;top:0;bottom:0;background:#ffffff59}
+.bar .pl{position:absolute;left:0;top:0;bottom:0;background:var(--acc)}
+.bar .th{position:absolute;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px #ffd21f40;transition:transform .15s}
+.bar.drag .th{transform:scale(1.25)}
+.bar .bub{position:absolute;bottom:26px;transform:translateX(-50%);background:#fff;color:#07090c;font:800 13px Barlow,sans-serif;padding:3px 8px;border-radius:6px;display:none;white-space:nowrap}
+.bar.drag .bub{display:block}
+.crow{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}
+.crow .tm{flex:1;text-shadow:0 1px 3px #000}
+.crow .tm span{color:#ffffffa6}
+.spd{width:auto;min-width:44px;padding:0 10px}
+.ripple{position:absolute;top:0;bottom:0;width:40%;z-index:3;display:grid;place-items:center;color:#fff;font:800 17px Barlow,sans-serif;opacity:0;transition:opacity .4s;pointer-events:none;text-shadow:0 1px 4px #000}
+.ripple.l{left:0;border-radius:0 50% 50% 0/0 100% 100% 0;background:linear-gradient(90deg,#ffffff2a,#ffffff10)}
+.ripple.r{right:0;border-radius:50% 0 0 50%/100% 0 0 100%;background:linear-gradient(270deg,#ffffff2a,#ffffff10)}
+.ripple.on{opacity:1;transition:none}
+.resume{position:absolute;left:12px;bottom:64px;z-index:5;display:none;align-items:center;gap:8px;background:#000d;color:#fff;font-size:13px;font-weight:600;padding:6px 6px 6px 12px;border-radius:20px}
+.resume.on{display:flex}
+.resume button{height:30px;border-radius:15px;border:0;background:#ffffff26;color:#fff;font:700 13px Barlow,sans-serif;padding:0 10px;cursor:pointer}
 .spin{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px;border-radius:50%;border:4px solid #ffffff33;border-top-color:var(--acc);animation:sp 1s linear infinite;z-index:3;display:none}
 .native.loading .spin{display:block}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -353,9 +381,16 @@ function openMatch(m, noPush, fs){
     '<div class="stage"><div class="fsbar"><button class="fsb" id="fsClose" aria-label="Salir de pantalla completa">✕</button><button class="fsb" id="fsPrev" aria-label="Cuarto anterior">‹</button><span class="fsb" id="fsName"></span><button class="fsb" id="fsNext" aria-label="Cuarto siguiente">›</button>' +
     '<button class="fsb zt" aria-label="Zoom" aria-pressed="false">' + ZICO + '</button><button class="fsb" id="fsReset" aria-label="Quitar zoom" hidden>1x</button></div>' +
     '<div class="vid"><video id="vplayer" playsinline preload="metadata"></video><iframe id="frame" allow="autoplay; fullscreen" allowfullscreen title="Vídeo del partido"></iframe>' +
-    '<div class="zpad" id="zpad"></div><div class="ripple l" id="rl">« 10 s</div><div class="ripple r" id="rr">10 s »</div><div class="spin"></div>' +
-    '<div class="ctl" id="ctl"><div class="cmid"><button class="cb" id="cBack" aria-label="Retroceder 10 segundos">' + RW + '<small>10</small></button><button class="cb big" id="cPlay" aria-label="Reproducir">' + PLAYI + '</button><button class="cb" id="cFwd" aria-label="Avanzar 10 segundos">' + FW + '<small>10</small></button></div>' +
-    '<div class="cbot"><span id="cTime">0:00</span><input type="range" id="cSeek" min="0" max="1000" value="0" aria-label="Posición del vídeo"><span id="cDur">0:00</span><button id="cSpeed" aria-label="Velocidad">1x</button></div></div>' +
+    '<div class="zpad" id="zpad"></div><div class="ripple l" id="rl"></div><div class="ripple r" id="rr"></div><div class="spin"></div>' +
+    '<div class="resume" id="resume"><span id="resumeTxt"></span><button id="resumeStart">Desde el inicio</button></div>' +
+    '<div class="ctl" id="ctl">' +
+      '<div class="ctop"><span class="qpill" id="cQ"></span><span class="ttl">' + esc(m.title) + '</span><span class="sp"></span>' +
+        (n > 1 ? '<button class="ib" id="cPrevQ" aria-label="Cuarto anterior">' + PREVQ + '</button><button class="ib" id="cNextQ" aria-label="Cuarto siguiente">' + NEXTQ + '</button>' : '') + '</div>' +
+      '<div class="cmid"><button class="cb" id="cBack" aria-label="Retroceder 10 segundos">' + RW + '<small>10</small></button><button class="cb big" id="cPlay" aria-label="Reproducir">' + PLAYI + '</button><button class="cb" id="cFwd" aria-label="Avanzar 10 segundos">' + FW + '<small>10</small></button></div>' +
+      '<div class="cbot"><div class="bar" id="cBar" role="slider" aria-label="Posición del vídeo" tabindex="0"><div class="tr"><div class="bf" id="cBuf"></div><div class="pl" id="cPl"></div></div><div class="th" id="cTh"></div><div class="bub" id="cBub">0:00</div></div>' +
+        '<div class="crow"><div class="tm"><b id="cTime">0:00</b> <span>/ <span id="cDur">0:00</span></span></div>' +
+        '<button class="ib spd" id="cSpeed" aria-label="Velocidad">1x</button><button class="ib zt" id="cZoom" aria-label="Zoom">' + ZICO + '</button><button class="ib" id="cFS" aria-label="Pantalla completa">' + FSI + '</button></div></div>' +
+    '</div>' +
     '<div class="zhint" id="zhint">Pellizca para ampliar · arrastra para moverte</div></div></div>' +
     '<div class="wbody">' + (n > 1 ? '<div class="qtabs" style="--n:' + Math.min(n, 6) + '">' + m.videos.map((v, i) => { const q = partName(v.name).match(/^Quart (\d)$/); return '<button class="qtab" data-q="' + i + '" title="' + esc(partName(v.name)) + '">' + (q ? 'Q' + q[1] : i + 1) + '</button>'; }).join('') + '</div>' : '') +
     '<div class="fsrow"><button class="btn pri" id="fsGo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Pantalla completa</button><button class="btn zbtn zt" aria-pressed="false">' + ZICO + 'Zoom</button></div>' +
@@ -380,7 +415,7 @@ function openMatch(m, noPush, fs){
 function play(i){
   const v = current.videos[i]; part = i;
   Z = { s: 1, x: 0, y: 0 }; applyZ();
-  loadMedia(v);
+  loadMedia(v); if ($('#resume')) $('#resume').classList.remove('on'); syncQ(); drawBar(0);
   $('#open').href = 'https://drive.google.com/file/d/' + encodeURIComponent(v.id) + '/view';
   document.querySelectorAll('.qtab').forEach(b => b.classList.toggle('on', +b.dataset.q === i));
   const many = current.videos.length > 1, q = partName(v.name).match(/^Quart (\d)$/);
@@ -399,6 +434,7 @@ const media = () => mode === 'native' ? $('#vplayer') : $('#frame');
 const fmtT = t => { t = Math.max(0, Math.floor(t || 0)); const m = Math.floor(t / 60), s = t % 60; return m + ':' + String(s).padStart(2, '0'); };
 function setMode(m){
   mode = m; const st = document.querySelector('.stage'); if (st) st.classList.toggle('native', m === 'native');
+  const wb = document.querySelector('.wbody'); if (wb) wb.classList.toggle('isnative', m === 'native');
   $('#frame').style.transform = ''; $('#vplayer').style.transform = '';
 }
 function loadMedia(v){
@@ -425,28 +461,80 @@ function fallbackToDrive(){
   setMode('drive'); $('#frame').src = 'https://drive.google.com/file/d/' + encodeURIComponent(v.id) + '/preview';
   toast('Usando el reproductor de Drive');
 }
-function seekBy(d){ const v = $('#vplayer'); if (mode !== 'native' || !isFinite(v.duration)) return; v.currentTime = Math.min(v.duration, Math.max(0, v.currentTime + d)); const r = $(d < 0 ? '#rl' : '#rr'); r.classList.add('on'); setTimeout(() => r.classList.remove('on'), 450); showCtl(); }
+const PREVQ = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg>';
+const NEXTQ = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg>';
+const FSI = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+const FSX = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+const POS_KEY = 'atv_pos';
+const getPos = () => { try { return JSON.parse(store.get(POS_KEY) || '{}'); } catch (e) { return {}; } };
+function savePos(id, t, d){ const p = getPos(); if (t > 15 && t < d - 20) p[id] = Math.floor(t); else delete p[id]; const k = Object.keys(p); if (k.length > 200) delete p[k[0]]; store.set(POS_KEY, JSON.stringify(p)); }
+let rip = { side: 0, n: 0, t: null };
+function seekBy(d){
+  const v = $('#vplayer'); if (mode !== 'native' || !isFinite(v.duration)) return;
+  v.currentTime = Math.min(v.duration, Math.max(0, v.currentTime + d));
+  const side = d < 0 ? -1 : 1; rip.n = rip.side === side ? rip.n + 1 : 1; rip.side = side;
+  const r = $(side < 0 ? '#rl' : '#rr'); r.textContent = side < 0 ? '«  ' + rip.n * 10 + ' s' : rip.n * 10 + ' s  »';
+  r.classList.add('on'); clearTimeout(rip.t); rip.t = setTimeout(() => { r.classList.remove('on'); rip = { side: 0, n: 0, t: null }; }, 700);
+  drawBar(); showCtl();
+}
 function togglePlay(){ const v = $('#vplayer'); if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); showCtl(); }
-function showCtl(){ const c = $('#ctl'); if (!c) return; c.classList.add('on'); clearTimeout(ctlT); ctlT = setTimeout(() => { const v = $('#vplayer'); if (v && !v.paused && !seeking) c.classList.remove('on'); }, 3000); }
+function showCtl(){ const c = $('#ctl'); if (!c) return; c.classList.add('on'); clearTimeout(ctlT); ctlT = setTimeout(() => { const v = $('#vplayer'); if (v && !v.paused && !seeking) c.classList.remove('on'); }, 3200); }
 function hideCtl(){ const c = $('#ctl'); if (c) c.classList.remove('on'); }
+function drawBar(ratio){
+  const v = $('#vplayer'); if (!v || !$('#cBar')) return;
+  const d = v.duration, r = ratio != null ? ratio : (isFinite(d) && d ? v.currentTime / d : 0);
+  $('#cPl').style.width = (r * 100) + '%'; $('#cTh').style.left = (r * 100) + '%';
+  $('#cTime').textContent = fmtT(r * (d || 0));
+  if (v.buffered.length && isFinite(d)) $('#cBuf').style.width = (v.buffered.end(v.buffered.length - 1) / d * 100) + '%';
+  $('#cBar').setAttribute('aria-valuenow', Math.round(r * 100));
+}
+function syncQ(){
+  if (!current || !$('#cQ')) return;
+  const n = current.videos.length, q = partName(current.videos[part].name).match(/^Quart (\d)$/);
+  $('#cQ').textContent = q ? 'Q' + q[1] : (n > 1 ? (part + 1) + '/' + n : 'Vídeo');
+  if ($('#cPrevQ')) { $('#cPrevQ').disabled = part === 0; $('#cNextQ').disabled = part === n - 1; }
+  $('#cFS').innerHTML = isFS() ? FSX : FSI;
+}
 function bindPlayer(){
   const v = $('#vplayer'), st = document.querySelector('.stage');
   v.addEventListener('error', fallbackToDrive);
-  v.addEventListener('loadedmetadata', () => { $('#cDur').textContent = fmtT(v.duration); });
+  v.addEventListener('loadedmetadata', () => {
+    $('#cDur').textContent = fmtT(v.duration); drawBar();
+    const t = getPos()[v.dataset.id];
+    if (t && t < v.duration - 20) {
+      v.currentTime = t; $('#resumeTxt').textContent = 'Continúas en ' + fmtT(t); $('#resume').classList.add('on');
+      setTimeout(() => $('#resume') && $('#resume').classList.remove('on'), 5000);
+    }
+  });
   ['waiting', 'loadstart'].forEach(ev => v.addEventListener(ev, () => st.classList.add('loading')));
   ['playing', 'canplay', 'pause'].forEach(ev => v.addEventListener(ev, () => st.classList.remove('loading')));
-  v.addEventListener('timeupdate', () => { if (seeking || !isFinite(v.duration)) return; $('#cTime').textContent = fmtT(v.currentTime); $('#cSeek').value = Math.round(v.currentTime / v.duration * 1000); });
+  let lastSave = 0;
+  v.addEventListener('timeupdate', () => {
+    if (!seeking) drawBar();
+    if (Date.now() - lastSave > 4000 && isFinite(v.duration)) { lastSave = Date.now(); savePos(v.dataset.id, v.currentTime, v.duration); }
+  });
+  v.addEventListener('progress', () => { if (!seeking) drawBar(); });
   const sync = () => { $('#cPlay').innerHTML = v.paused ? PLAYI : PAUSEI; $('#cPlay').setAttribute('aria-label', v.paused ? 'Reproducir' : 'Pausa'); if (v.paused) showCtl(); };
   v.addEventListener('play', sync); v.addEventListener('pause', sync);
-  v.addEventListener('ended', () => { if (current && part < current.videos.length - 1) { play(part + 1); toast(partName(current.videos[part].name)); } });
+  v.addEventListener('ended', () => { savePos(v.dataset.id, 0, 1); if (current && part < current.videos.length - 1) { play(part + 1); toast(partName(current.videos[part].name)); } });
   $('#cPlay').addEventListener('click', togglePlay);
   $('#cBack').addEventListener('click', () => seekBy(-10));
   $('#cFwd').addEventListener('click', () => seekBy(10));
-  const seek = $('#cSeek');
-  seek.addEventListener('input', () => { seeking = true; if (isFinite(v.duration)) $('#cTime').textContent = fmtT(seek.value / 1000 * v.duration); showCtl(); });
-  seek.addEventListener('change', () => { if (isFinite(v.duration)) v.currentTime = seek.value / 1000 * v.duration; seeking = false; showCtl(); });
+  if ($('#cPrevQ')) { $('#cPrevQ').addEventListener('click', () => { play(part - 1); showCtl(); }); $('#cNextQ').addEventListener('click', () => { play(part + 1); showCtl(); }); }
+  $('#cFS').addEventListener('click', () => { isFS() ? exitFS() : enterFS(); setTimeout(syncQ, 300); showCtl(); });
+  $('#cZoom').addEventListener('click', () => { setZoomMode(true); showCtl(); });
+  $('#resumeStart').addEventListener('click', () => { v.currentTime = 0; $('#resume').classList.remove('on'); });
   const SPEEDS = [1, 1.5, 2, 0.5];
-  $('#cSpeed').addEventListener('click', () => { const n = SPEEDS[(SPEEDS.indexOf(v.playbackRate) + 1) % SPEEDS.length]; v.playbackRate = n; $('#cSpeed').textContent = n + 'x'; showCtl(); });
+  $('#cSpeed').addEventListener('click', () => { const n = SPEEDS[(SPEEDS.indexOf(v.playbackRate) + 1) % SPEEDS.length]; v.playbackRate = n; $('#cSpeed').textContent = n + 'x'; $('#cSpeed').classList.toggle('on', n !== 1); showCtl(); });
+  // Barra: tocar o arrastrar para saltar, con burbuja de tiempo
+  const bar = $('#cBar');
+  const ratioAt = e => { const r = bar.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); };
+  const preview = r => { drawBar(r); $('#cBub').style.left = (r * 100) + '%'; $('#cBub').textContent = fmtT(r * (v.duration || 0)); };
+  bar.addEventListener('pointerdown', e => { if (!isFinite(v.duration)) return; seeking = true; bar.setPointerCapture(e.pointerId); bar.classList.add('drag'); preview(ratioAt(e)); showCtl(); });
+  bar.addEventListener('pointermove', e => { if (!seeking) return; preview(ratioAt(e)); showCtl(); });
+  const end = e => { if (!seeking) return; v.currentTime = ratioAt(e) * v.duration; seeking = false; bar.classList.remove('drag'); drawBar(); showCtl(); };
+  bar.addEventListener('pointerup', end); bar.addEventListener('pointercancel', () => { seeking = false; bar.classList.remove('drag'); drawBar(); });
+  bar.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); seekBy(e.key === 'ArrowLeft' ? -10 : 10); } });
 }
 document.addEventListener('keydown', e => {
   if (view !== 'watch' || mode !== 'native' || /INPUT|TEXTAREA/.test(document.activeElement.tagName) && document.activeElement.id !== 'cSeek') return;
@@ -524,7 +612,7 @@ function leaveWatch(){
 
 // ---- Pantalla completa ----
 const isFS = () => !!(document.fullscreenElement || document.webkitFullscreenElement) || !!document.querySelector('.stage.pfs');
-function pseudoFS(on){ const st = document.querySelector('.stage'); if (st) st.classList.toggle('pfs', on); document.body.style.overflow = on ? 'hidden' : ''; }
+function pseudoFS(on){ const st = document.querySelector('.stage'); if (st) st.classList.toggle('pfs', on); document.body.style.overflow = on ? 'hidden' : ''; if (current && $('#cFS')) syncQ(); }
 function enterFS(){
   const st = document.querySelector('.stage'); if (!st || isFS()) return;
   const req = st.requestFullscreen || st.webkitRequestFullscreen;
@@ -538,7 +626,7 @@ function exitFS(){
   if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
   pseudoFS(false);
 }
-const onFS = () => { if (!(document.fullscreenElement || document.webkitFullscreenElement)) { try { screen.orientation.unlock(); } catch (e) {} } };
+const onFS = () => { if (!(document.fullscreenElement || document.webkitFullscreenElement)) { try { screen.orientation.unlock(); } catch (e) {} } if (typeof syncQ === 'function') syncQ(); };
 document.addEventListener('fullscreenchange', onFS);
 document.addEventListener('webkitfullscreenchange', onFS);
 
