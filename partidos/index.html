@@ -602,6 +602,7 @@ function renderHome(push){
   h += rail('Sigue viendo', cont);
   if (gs[0]) h += '<section class="sec"><div class="shead"><h2>Temporada ' + esc(gs[0]) + '</h2><button class="lnk" data-season="' + esc(gs[0]) + '">Ver temporada</button></div>' + seasonGrid(gs[0]) + '</section>';
   gs.slice(1).forEach(g => { h += rail(g, DATA.filter(m => m.group === g), g); });
+  if (!(matchMedia('(display-mode: standalone)').matches || navigator.standalone === true)) h += '<div style="display:flex;justify-content:center;padding:28px 0 0"><button class="btn" id="installAgain"><img src="icons/escudo.png" alt="" style="width:22px;border-radius:4px">Instalar la app en el móvil</button></div>';
   h += '<div style="text-align:center;padding:30px 0 10px;color:var(--mute);font-size:13px">' + DATA.length + ' partidos · ' + DATA.reduce((n, m) => n + m.videos.length, 0) + ' vídeos</div></div>';
   $('#app').innerHTML = h;
   bind($('#app'));
@@ -1076,6 +1077,9 @@ window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferr
 $('#install').addEventListener('click', async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; $('#sheet').classList.remove('on'); });
 $('#later').addEventListener('click', () => { store.set('atv_hide_install', '1'); $('#sheet').classList.remove('on'); });
 if (/android|iphone|ipad|ipod/i.test(navigator.userAgent) || ios) setTimeout(showSheet, 4000);
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+// Botón para volver a abrir el aviso aunque se haya pulsado "Ahora no"
+document.addEventListener('click', e => { if (e.target.closest('#installAgain')) { try { localStorage.removeItem('atv_hide_install'); } catch (x) {} showSheet(); } });
 }
 </script>
 </body>
