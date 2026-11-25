@@ -545,7 +545,6 @@ function seasonStatsHTML(){
     .map(([nm, o]) => [nm + '#' + (Object.entries(o.dors).sort((x, y) => y[1] - x[1])[0] || [''])[0], o.n]);
   return '<section class="sec"><div class="shead"><h2>La temporada en números</h2></div>' + streakHTML(played) + '<div class="stats">' +
     [['PJ', played.length, ''], ['G', v, 'v'], ['E', e, ''], ['P', d, 'd'], ['GF*', gf, ''], ['GC*', gc, '']].map(x => '<div class="stat ' + x[2] + '"><b>' + x[1] + '</b><span>' + x[0] + '</span></div>').join('') + '</div>' +
-    podiumHTML(top) + (top.length > 3 ? '<div class="scorers">' + top.slice(3).map(([k, n]) => { const [nm, dn] = k.split('#'); return '<div class="scorer"><span class="n">' + esc(dn || '·') + '</span>' + esc(nm) + ' <i>× ' + n + '</i></div>'; }).join('') + '</div>' : '') +
     '<div style="padding:8px max(4vw,18px) 0;color:var(--mute);font-size:12px">* Goles reales de las actas. En el marcador oficial la diferencia máxima es de 10.</div></section>';
 }
 const PLAYS = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>';
@@ -594,11 +593,11 @@ function renderHome(push){
   const feat = DATA.slice(0, 3);
   const cont = seen.map(id => DATA.find(m => m.id === id)).filter(Boolean).slice(0, 12);
   const gs = groups();
-  let h = '<div class="view"><section class="hero" id="hero"></section><div class="merlons" style="margin-top:0"></div>';
+  let h = '<div class="view"><section class="hero" id="hero"></section>';
   h += roadHTML();
   h += nextMatchHTML();
   h += rail('Últimos partidos', DATA.slice(0, 12));
-  h += '<div class="merlons"></div>' + seasonStatsHTML();
+  h += seasonStatsHTML();
   h += rail('Sigue viendo', cont);
   if (gs[0]) h += '<section class="sec"><div class="shead"><h2>Temporada ' + esc(gs[0]) + '</h2><button class="lnk" data-season="' + esc(gs[0]) + '">Ver temporada</button></div>' + seasonGrid(gs[0]) + '</section>';
   gs.slice(1).forEach(g => { h += rail(g, DATA.filter(m => m.group === g), g); });
