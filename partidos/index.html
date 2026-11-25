@@ -110,7 +110,25 @@ body.demo .demotag{display:inline-block}
 .vid{position:absolute;inset:0;overflow:hidden;background:#000}
 .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0;transform-origin:0 0}
 .zpad{position:absolute;inset:0;display:none;touch-action:none;cursor:grab;z-index:2}
-.zoomon .zpad{display:block}
+.zoomon .zpad,.native .zpad{display:block}
+.vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform-origin:0 0;display:none;background:#000}
+.native video{display:block}.native iframe{display:none}
+.ctl{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;justify-content:space-between;pointer-events:none;background:linear-gradient(#0008,transparent 30%,transparent 62%,#000b);opacity:0;transition:opacity .25s}
+.native .ctl{display:flex}
+.ctl.on{opacity:1}
+.ctl.on button,.ctl.on input{pointer-events:auto}
+.cmid{flex:1;display:flex;align-items:center;justify-content:center;gap:clamp(24px,8vw,64px)}
+.cb{width:56px;height:56px;border-radius:50%;border:0;background:#000000a6;color:#fff;display:grid;place-items:center;cursor:pointer;font:800 13px Barlow,sans-serif;position:relative}
+.cb.big{width:72px;height:72px;background:var(--acc);color:var(--accInk)}
+.cb small{position:absolute;inset:0;display:grid;place-items:center;font-size:9px;font-weight:800;padding-top:2px}
+.cbot{display:flex;align-items:center;gap:10px;padding:0 12px 10px;color:#fff;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.cbot input{flex:1;accent-color:var(--acc);height:28px}
+.cbot button{height:34px;min-width:44px;border-radius:17px;border:0;background:#ffffff26;color:#fff;font:800 13px Barlow,sans-serif;cursor:pointer;padding:0 10px}
+.ripple{position:absolute;top:0;bottom:0;width:38%;z-index:3;display:grid;place-items:center;color:#fff;font:800 18px Barlow,sans-serif;opacity:0;transition:opacity .35s;pointer-events:none;background:radial-gradient(closest-side,#ffffff2e,transparent)}
+.ripple.l{left:0}.ripple.r{right:0}.ripple.on{opacity:1;transition:none}
+.spin{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px;border-radius:50%;border:4px solid #ffffff33;border-top-color:var(--acc);animation:sp 1s linear infinite;z-index:3;display:none}
+.native.loading .spin{display:block}
+@keyframes sp{to{transform:rotate(360deg)}}
 .zoomon .vid{box-shadow:inset 0 0 0 3px var(--acc)}
 .zhint{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:#000c;color:#fff;font-size:13px;font-weight:600;padding:6px 12px;border-radius:16px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .3s;z-index:3}
 .zhint.on{opacity:1}
@@ -334,7 +352,11 @@ function openMatch(m, noPush, fs){
     '<div class="tag"><i></i>' + esc([m.jornada ? 'JORNADA ' + m.jornada : '', fmtDate(m.date), m.group].filter(Boolean).join(' · ') || 'PARTIDO') + '</div>' + matchup(m, 72) + '</div></section>' +
     '<div class="stage"><div class="fsbar"><button class="fsb" id="fsClose" aria-label="Salir de pantalla completa">✕</button><button class="fsb" id="fsPrev" aria-label="Cuarto anterior">‹</button><span class="fsb" id="fsName"></span><button class="fsb" id="fsNext" aria-label="Cuarto siguiente">›</button>' +
     '<button class="fsb zt" aria-label="Zoom" aria-pressed="false">' + ZICO + '</button><button class="fsb" id="fsReset" aria-label="Quitar zoom" hidden>1x</button></div>' +
-    '<div class="vid"><iframe id="frame" allow="autoplay; fullscreen" allowfullscreen title="Vídeo del partido"></iframe><div class="zpad" id="zpad"></div><div class="zhint" id="zhint">Pellizca para ampliar · arrastra para moverte</div></div></div>' +
+    '<div class="vid"><video id="vplayer" playsinline preload="metadata"></video><iframe id="frame" allow="autoplay; fullscreen" allowfullscreen title="Vídeo del partido"></iframe>' +
+    '<div class="zpad" id="zpad"></div><div class="ripple l" id="rl">« 10 s</div><div class="ripple r" id="rr">10 s »</div><div class="spin"></div>' +
+    '<div class="ctl" id="ctl"><div class="cmid"><button class="cb" id="cBack" aria-label="Retroceder 10 segundos">' + RW + '<small>10</small></button><button class="cb big" id="cPlay" aria-label="Reproducir">' + PLAYI + '</button><button class="cb" id="cFwd" aria-label="Avanzar 10 segundos">' + FW + '<small>10</small></button></div>' +
+    '<div class="cbot"><span id="cTime">0:00</span><input type="range" id="cSeek" min="0" max="1000" value="0" aria-label="Posición del vídeo"><span id="cDur">0:00</span><button id="cSpeed" aria-label="Velocidad">1x</button></div></div>' +
+    '<div class="zhint" id="zhint">Pellizca para ampliar · arrastra para moverte</div></div></div>' +
     '<div class="wbody">' + (n > 1 ? '<div class="qtabs" style="--n:' + Math.min(n, 6) + '">' + m.videos.map((v, i) => { const q = partName(v.name).match(/^Quart (\d)$/); return '<button class="qtab" data-q="' + i + '" title="' + esc(partName(v.name)) + '">' + (q ? 'Q' + q[1] : i + 1) + '</button>'; }).join('') + '</div>' : '') +
     '<div class="fsrow"><button class="btn pri" id="fsGo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Pantalla completa</button><button class="btn zbtn zt" aria-pressed="false">' + ZICO + 'Zoom</button></div>' +
     '<div class="two"><button class="btn" id="share">Copiar enlace</button><a class="btn" id="open" target="_blank" rel="noopener">Abrir en Drive</a></div></div>' +
@@ -344,6 +366,7 @@ function openMatch(m, noPush, fs){
   document.querySelectorAll('.zt').forEach(b => b.addEventListener('click', () => setZoomMode(!zoomMode)));
   $('#fsReset').addEventListener('click', () => { Z = { s: 1, x: 0, y: 0 }; applyZ(); });
   bindZoom($('#zpad'));
+  bindPlayer();
   $('#fsClose').addEventListener('click', exitFS);
   $('#fsPrev').addEventListener('click', () => play(Math.max(0, part - 1)));
   $('#fsNext').addEventListener('click', () => play(Math.min(n - 1, part + 1)));
@@ -357,7 +380,7 @@ function openMatch(m, noPush, fs){
 function play(i){
   const v = current.videos[i]; part = i;
   Z = { s: 1, x: 0, y: 0 }; applyZ();
-  $('#frame').src = DEMO ? DEMO_SRC : 'https://drive.google.com/file/d/' + encodeURIComponent(v.id) + '/preview';
+  loadMedia(v);
   $('#open').href = 'https://drive.google.com/file/d/' + encodeURIComponent(v.id) + '/view';
   document.querySelectorAll('.qtab').forEach(b => b.classList.toggle('on', +b.dataset.q === i));
   const many = current.videos.length > 1, q = partName(v.name).match(/^Quart (\d)$/);
@@ -365,12 +388,79 @@ function play(i){
   $('#fsName').hidden = $('#fsPrev').hidden = $('#fsNext').hidden = !many;
   $('#fsPrev').disabled = i === 0; $('#fsNext').disabled = i === current.videos.length - 1;
 }
-// ---- Zoom: capa táctil encima del vídeo (pellizcar, arrastrar, doble toque, rueda del ratón) ----
+
+// ---- Reproductor propio (lee el vídeo de Drive). Si Drive no lo deja, vuelve al reproductor de Drive ----
+const PLAYI = '<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>';
+const PAUSEI = '<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+const RW = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg>';
+const FW = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5"/></svg>';
+let mode = 'drive', nativeBroken = (() => { try { return sessionStorage.getItem('atv_native_off') === '1'; } catch (e) { return false; } })(), ctlT = null, seeking = false;
+const media = () => mode === 'native' ? $('#vplayer') : $('#frame');
+const fmtT = t => { t = Math.max(0, Math.floor(t || 0)); const m = Math.floor(t / 60), s = t % 60; return m + ':' + String(s).padStart(2, '0'); };
+function setMode(m){
+  mode = m; const st = document.querySelector('.stage'); if (st) st.classList.toggle('native', m === 'native');
+  $('#frame').style.transform = ''; $('#vplayer').style.transform = '';
+}
+function loadMedia(v){
+  const vid = $('#vplayer'), f = $('#frame');
+  if (DEMO || nativeBroken) {
+    setMode('drive'); vid.removeAttribute('src');
+    f.src = DEMO ? DEMO_SRC : 'https://drive.google.com/file/d/' + encodeURIComponent(v.id) + '/preview';
+    return;
+  }
+  setMode('native'); f.src = 'about:blank';
+  document.querySelector('.stage').classList.add('loading');
+  vid.poster = thumb(v.id, 1280);
+  vid.dataset.id = v.id;
+  vid.src = 'https://drive.usercontent.google.com/download?id=' + encodeURIComponent(v.id) + '&export=download&confirm=t';
+  vid.playbackRate = +($('#cSpeed').textContent.replace('x', '')) || 1;
+  const p = vid.play(); if (p && p.catch) p.catch(() => {});
+  showCtl();
+}
+function fallbackToDrive(){
+  if (mode !== 'native' || !current) return;
+  nativeBroken = true; try { sessionStorage.setItem('atv_native_off', '1'); } catch (e) {}
+  const v = current.videos[part]; const vid = $('#vplayer'); vid.removeAttribute('src'); vid.load();
+  document.querySelector('.stage').classList.remove('loading');
+  setMode('drive'); $('#frame').src = 'https://drive.google.com/file/d/' + encodeURIComponent(v.id) + '/preview';
+  toast('Usando el reproductor de Drive');
+}
+function seekBy(d){ const v = $('#vplayer'); if (mode !== 'native' || !isFinite(v.duration)) return; v.currentTime = Math.min(v.duration, Math.max(0, v.currentTime + d)); const r = $(d < 0 ? '#rl' : '#rr'); r.classList.add('on'); setTimeout(() => r.classList.remove('on'), 450); showCtl(); }
+function togglePlay(){ const v = $('#vplayer'); if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); showCtl(); }
+function showCtl(){ const c = $('#ctl'); if (!c) return; c.classList.add('on'); clearTimeout(ctlT); ctlT = setTimeout(() => { const v = $('#vplayer'); if (v && !v.paused && !seeking) c.classList.remove('on'); }, 3000); }
+function hideCtl(){ const c = $('#ctl'); if (c) c.classList.remove('on'); }
+function bindPlayer(){
+  const v = $('#vplayer'), st = document.querySelector('.stage');
+  v.addEventListener('error', fallbackToDrive);
+  v.addEventListener('loadedmetadata', () => { $('#cDur').textContent = fmtT(v.duration); });
+  ['waiting', 'loadstart'].forEach(ev => v.addEventListener(ev, () => st.classList.add('loading')));
+  ['playing', 'canplay', 'pause'].forEach(ev => v.addEventListener(ev, () => st.classList.remove('loading')));
+  v.addEventListener('timeupdate', () => { if (seeking || !isFinite(v.duration)) return; $('#cTime').textContent = fmtT(v.currentTime); $('#cSeek').value = Math.round(v.currentTime / v.duration * 1000); });
+  const sync = () => { $('#cPlay').innerHTML = v.paused ? PLAYI : PAUSEI; $('#cPlay').setAttribute('aria-label', v.paused ? 'Reproducir' : 'Pausa'); if (v.paused) showCtl(); };
+  v.addEventListener('play', sync); v.addEventListener('pause', sync);
+  v.addEventListener('ended', () => { if (current && part < current.videos.length - 1) { play(part + 1); toast(partName(current.videos[part].name)); } });
+  $('#cPlay').addEventListener('click', togglePlay);
+  $('#cBack').addEventListener('click', () => seekBy(-10));
+  $('#cFwd').addEventListener('click', () => seekBy(10));
+  const seek = $('#cSeek');
+  seek.addEventListener('input', () => { seeking = true; if (isFinite(v.duration)) $('#cTime').textContent = fmtT(seek.value / 1000 * v.duration); showCtl(); });
+  seek.addEventListener('change', () => { if (isFinite(v.duration)) v.currentTime = seek.value / 1000 * v.duration; seeking = false; showCtl(); });
+  const SPEEDS = [1, 1.5, 2, 0.5];
+  $('#cSpeed').addEventListener('click', () => { const n = SPEEDS[(SPEEDS.indexOf(v.playbackRate) + 1) % SPEEDS.length]; v.playbackRate = n; $('#cSpeed').textContent = n + 'x'; showCtl(); });
+}
+document.addEventListener('keydown', e => {
+  if (view !== 'watch' || mode !== 'native' || /INPUT|TEXTAREA/.test(document.activeElement.tagName) && document.activeElement.id !== 'cSeek') return;
+  if (e.key === 'ArrowLeft') { e.preventDefault(); seekBy(-10); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); seekBy(10); }
+  else if (e.key === ' ' || e.key === 'k') { e.preventDefault(); togglePlay(); }
+});
+
+// ---- Zoom: pellizcar y arrastrar sobre el vídeo; con el reproductor propio, toques = controles y doble toque = ±10 s ----
 const ZICO = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M11 8v6M8 11h6"/></svg>';
 let Z = { s: 1, x: 0, y: 0 }, zoomMode = false;
 function applyZ(){
-  const f = $('#frame'), box = document.querySelector('.vid'); if (!f || !box) return;
-  const w = box.clientWidth, h = box.clientHeight;
+  const box = document.querySelector('.vid'); if (!box || !$('#frame')) return;
+  const f = media(), w = box.clientWidth, h = box.clientHeight;
   Z.s = Math.min(5, Math.max(1, Z.s));
   Z.x = Math.min(0, Math.max(w - w * Z.s, Z.x)); Z.y = Math.min(0, Math.max(h - h * Z.s, Z.y));
   f.style.transform = Z.s === 1 ? '' : 'translate(' + Z.x + 'px,' + Z.y + 'px) scale(' + Z.s + ')';
@@ -378,36 +468,56 @@ function applyZ(){
 }
 function zoomAt(px, py, ns){ Z.x = px - (px - Z.x) * (ns / Z.s); Z.y = py - (py - Z.y) * (ns / Z.s); Z.s = ns; applyZ(); }
 function setZoomMode(on){
+  const b = document.querySelector('.vid'); if (!b) return;
+  if (mode === 'native') {   // con el reproductor propio el zoom siempre está disponible: el botón alterna 1x / 2x
+    zoomAt(b.clientWidth / 2, b.clientHeight / 2, Z.s > 1.05 ? 1 : 2);
+    document.querySelectorAll('.zt').forEach(x => { x.classList.toggle('on', Z.s > 1); x.setAttribute('aria-pressed', Z.s > 1); });
+    hint(Z.s > 1 ? 'Pellizca para ampliar · arrastra para moverte' : ''); return;
+  }
   zoomMode = on;
-  const st = document.querySelector('.stage'); if (st) st.classList.toggle('zoomon', on);
-  document.querySelectorAll('.zt').forEach(b => { b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
-  const hint = $('#zhint');
-  if (hint) { hint.textContent = on ? 'Pellizca para ampliar · arrastra para moverte' : 'Zoom fijado · toca el vídeo para play/pausa'; hint.classList.add('on'); clearTimeout(setZoomMode.t); setZoomMode.t = setTimeout(() => hint.classList.remove('on'), 2200); }
-  if (on && Z.s === 1) { const b = document.querySelector('.vid'); zoomAt(b.clientWidth / 2, b.clientHeight / 2, 2); }
+  document.querySelector('.stage').classList.toggle('zoomon', on);
+  document.querySelectorAll('.zt').forEach(x => { x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
+  hint(on ? 'Pellizca para ampliar · arrastra para moverte' : 'Zoom fijado · toca el vídeo para play/pausa');
+  if (on && Z.s === 1) zoomAt(b.clientWidth / 2, b.clientHeight / 2, 2);
 }
+function hint(t){ const h = $('#zhint'); if (!h || !t) return; h.textContent = t; h.classList.add('on'); clearTimeout(hint.t); hint.t = setTimeout(() => h.classList.remove('on'), 2200); }
 function bindZoom(pad){
-  const pts = new Map(); let last = null, lastTap = 0;
+  const pts = new Map(); let last = null, lastTap = 0, tapT = null, down = null, moved = false;
   const local = e => { const r = pad.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   pad.addEventListener('pointerdown', e => {
     pad.setPointerCapture(e.pointerId); pts.set(e.pointerId, local(e)); last = null;
-    if (pts.size === 1) { const now = Date.now(); if (now - lastTap < 300) { const [x, y] = local(e); zoomAt(x, y, Z.s > 1.2 ? 1 : 2.5); } lastTap = now; }
+    if (pts.size === 1) { down = { t: Date.now(), p: local(e) }; moved = false; } else moved = true;
   });
   pad.addEventListener('pointermove', e => {
     if (!pts.has(e.pointerId)) return;
     const prev = pts.get(e.pointerId), cur = local(e); pts.set(e.pointerId, cur);
-    if (pts.size === 1) { Z.x += cur[0] - prev[0]; Z.y += cur[1] - prev[1]; applyZ(); return; }
+    if (down && Math.hypot(cur[0] - down.p[0], cur[1] - down.p[1]) > 10) moved = true;
+    if (pts.size === 1) { if (Z.s > 1) { Z.x += cur[0] - prev[0]; Z.y += cur[1] - prev[1]; applyZ(); } return; }
     const [a, b] = [...pts.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
-    if (last) { Z.x += mx - last.mx; Z.y += my - last.my; zoomAt(mx, my, Z.s * d / last.d); }
+    if (last) { Z.x += mx - last.mx; Z.y += my - last.my; zoomAt(mx, my, Z.s * d / last.d); document.querySelectorAll('.zt').forEach(x => x.classList.toggle('on', Z.s > 1 || zoomMode)); }
     last = { d, mx, my };
   });
-  const up = e => { pts.delete(e.pointerId); last = null; };
-  pad.addEventListener('pointerup', up); pad.addEventListener('pointercancel', up);
+  const up = e => {
+    pts.delete(e.pointerId); last = null;
+    if (pts.size || !down || moved || Date.now() - down.t > 300) return;
+    const [x] = down.p, w = pad.clientWidth, now = Date.now();
+    if (now - lastTap < 300) {            // doble toque
+      clearTimeout(tapT); lastTap = 0;
+      if (mode === 'native') { if (x < w * .4) seekBy(-10); else if (x > w * .6) seekBy(10); else togglePlay(); }
+      else zoomAt(down.p[0], down.p[1], Z.s > 1.2 ? 1 : 2.5);
+      return;
+    }
+    lastTap = now;
+    if (mode === 'native') tapT = setTimeout(() => { const c = $('#ctl'); c.classList.contains('on') ? hideCtl() : showCtl(); }, 260);
+  };
+  pad.addEventListener('pointerup', up); pad.addEventListener('pointercancel', e => { pts.delete(e.pointerId); last = null; });
   pad.addEventListener('wheel', e => { e.preventDefault(); const [x, y] = local(e); zoomAt(x, y, Z.s * (e.deltaY < 0 ? 1.15 : 1 / 1.15)); }, { passive: false });
 }
 window.addEventListener('resize', () => applyZ());
 
 function leaveWatch(){
   zoomMode = false; Z = { s: 1, x: 0, y: 0 };
+  const vp = $('#vplayer'); if (vp) { vp.pause(); vp.removeAttribute('src'); vp.load(); }
   if (document.fullscreenElement || document.webkitFullscreenElement) exitFS();
   document.body.style.overflow = ''; current = null; clearInterval(heroTimer);
 }
