@@ -346,7 +346,7 @@ function card(m){
   const s = seen.includes(m.id), t = teams(m.title);
   const label = isNew(m) && !s ? '<span class="badge new">NUEVO</span>' : (m.jornada ? '<span class="badge">J' + m.jornada + '</span>' : (m.date ? '<span class="badge">' + esc(fmtDate(m.date)) + '</span>' : ''));
   return '<button class="card" data-id="' + esc(m.id) + '"><div class="thumb"><img loading="lazy" alt="" src="' + thumb(m.videos[0].id) + '" onerror="this.remove()">' + label +
-    '<span class="dur">' + m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' cuartos') + '</span>' + (s ? '<span class="seen"></span>' : '') + '</div>' +
+    (m.fcf && m.fcf.postponed ? '<span class="badge" style="left:auto;right:10px;background:#B45309">APLAZADO</span>' : '') + '<span class="dur">' + m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' cuartos') + '</span>' + (s ? '<span class="seen"></span>' : '') + '</div>' +
     (t ? '<div class="mini">' + badge(t[0], 36, crestOf(m, t[0])) + '<span class="vs' + (m.score ? ' sc' : '') + '"' + (m.res ? ' style="color:' + (m.res === 'V' ? '#4ADE80' : m.res === 'D' ? '#FB7185' : 'var(--mute)') + '"' : '') + '>' + esc(m.score || 'VS') + '</span>' + badge(t[1], 36, crestOf(m, t[1])) + '</div>' : '<div class="mini">' + badge('Anguera', 36) + '</div>') +
     '<div class="ctitle">' + esc(m.title) + '</div></button>';
 }
@@ -397,7 +397,7 @@ function fichaHTML(m){
   const d = a.date ? new Date(a.date + 'T12:00:00') : null;
   const goals = a.goals || [];
   return '<section class="sec"><div class="shead"><h2>Ficha del partido</h2><span class="lnk" style="cursor:default">Acta FCF</span></div><div class="ficha">' +
-    '<div class="finfo"><span><b>' + (d ? DIAS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] : '') + '</b> · ' + esc(a.time) + 'h</span><span>' + esc(a.stadium) + '</span><span>' + (a.angueraHome ? 'En casa' : 'Fuera') + '</span></div>' +
+    '<div class="finfo">' + (a.postponed ? '<span class="res" style="background:#B45309">APLAZADO</span>' : '') + '<span><b>' + (d ? DIAS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] : '') + '</b> · ' + esc(a.time) + 'h</span><span>' + esc(a.stadium) + '</span><span>' + (a.angueraHome ? 'En casa' : 'Fuera') + '</span></div>' +
     (goals.length ? goals.map(g => g.ours
       ? '<div class="goal"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">' + BALL + ' ' + esc(g.name || 'Gol') + (g.dorsal ? ' <i>#' + esc(g.dorsal) + '</i>' : '') + '</span><span class="s">' + esc(g.score) + '</span></div>'
       : '<div class="goal riv"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">Gol del rival</span><span class="s">' + esc(g.score) + '</span></div>').join('')

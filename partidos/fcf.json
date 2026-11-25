@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T10:11:55+00:00",
+ "updated": "2026-11-25T10:14:54+00:00",
  "competition": "Prebenjamí S8 · Grup 3",
  "season": "2026-2027",
  "group": "T26/27 S8",
@@ -306,7 +306,8 @@
      "score": "11-1",
      "ours": false
     }
-   ]
+   ],
+   "postponed": true
   },
   {
    "jornada": 4,

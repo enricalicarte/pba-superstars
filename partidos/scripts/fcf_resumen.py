@@ -107,6 +107,11 @@ def main():
         print('Aviso: no hay actas del Anguera; no se toca fcf.json', file=sys.stderr)
         return 1
     idx = json.loads((data / 'index.json').read_text(encoding='utf-8')) if (data / 'index.json').exists() else {}
+    # Aplazado: jornada que se juega después que la siguiente
+    js = sorted(actas)
+    for k, n in zip(js, js[1:]):
+        if actas[k]['date'] and actas[n]['date'] and actas[k]['date'] > actas[n]['date']:
+            actas[k]['postponed'] = True
     res = {
         'updated': datetime.now(timezone.utc).isoformat(timespec='seconds'),
         'competition': 'Prebenjamí S8 · Grup 3', 'season': idx.get('temporada', ''),
