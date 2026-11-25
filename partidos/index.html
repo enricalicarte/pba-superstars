@@ -116,7 +116,14 @@ button.goal:active{background:#ffffff0f}
 .badge{position:absolute;left:10px;top:10px;background:#07090c;font:800 15px/1 'Barlow Condensed',sans-serif;padding:6px 8px;border-radius:7px;white-space:nowrap}
 .badge.new{background:var(--red)}
 .dur{position:absolute;right:10px;bottom:10px;background:#000000b3;font-size:12px;font-weight:600;padding:3px 7px;border-radius:6px;white-space:nowrap}
-.seen{position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--accT)}
+.seen{position:absolute;left:0;bottom:0;height:4px;background:var(--accT);border-radius:0 2px 2px 0}
+#backBtn[hidden]{display:none}
+@media (orientation:portrait) and (min-height:600px){.view>.stage:not(.pfs):not(:fullscreen){position:sticky;top:calc(env(safe-area-inset-top) + 64px);z-index:20;box-shadow:0 14px 28px #000a}}
+.marks{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none}
+.marks i{position:absolute;top:50%;width:4px;height:12px;margin:-6px 0 0 -2px;border-radius:2px;background:var(--hi);box-shadow:0 0 0 1px #0008}
+.marks i.riv{background:#ffffff8c}
+.hold{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:6;background:#000c;color:#fff;font:800 14px Barlow,sans-serif;padding:6px 14px;border-radius:16px;display:none}
+.hold.on{display:block}
 .mini{display:flex;align-items:center;gap:8px;padding:12px 12px 4px}
 .mini .vs{flex:1;text-align:center;font:800 16px 'Barlow Condensed',sans-serif;color:var(--mute);white-space:nowrap}
 .mini .vs.sc{color:#fff;font-size:20px}
@@ -374,6 +381,7 @@ button.goal:active{background:#ffffff0f}
 <div class="splash" id="splash"><div class="intro"><span class="ring"></span><img src="icons/escudo.png" alt="PB Anguera"><div class="wd"><span>ANGUERA <b>TV</b></span></div><div class="ln"></div></div></div>
 
 <header class="top" id="top">
+  <button class="icon" id="backBtn" aria-label="Volver" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   <button class="brand" id="home" aria-label="Inicio"><img src="icons/escudo.png" alt=""><span>ANGUERA <b>TV</b></span></button>
   <span class="demotag">DEMO</span>
   <div class="sp"></div>
@@ -390,6 +398,7 @@ button.goal:active{background:#ffffff0f}
 
 <section class="search" id="search" role="dialog" aria-label="Buscar partidos">
   <div class="sbar"><input id="q" type="search" placeholder="Rival, jornada, temporada…" aria-label="Buscar"><button class="btn" id="closeSearch">Cerrar</button></div>
+  <div class="chips" id="schips" style="margin-bottom:16px"></div>
   <div class="results" id="results"></div>
 </section>
 
@@ -409,6 +418,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store = { get(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch (e) {} } };
 const MONTHS = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+let back = null, heroFeat = [], sFilter = '';
 let DATA = [], DEMO = false, view = 'home', current = null, part = 0, startId = null, heroIdx = 0, heroTimer = null, seasonGroup = '';
 let seen = (() => { try { return JSON.parse(store.get('partidos_seen') || '[]'); } catch (e) { return []; } })();
 
@@ -495,12 +505,12 @@ function roadHTML(){
 
 // ---- Tarjetas y celdas ----
 function card(m){
-  const s = seen.includes(m.id), t = teams(m.title);
+  const s = seen.includes(m.id), t = teams(m.title), dn0 = getDone(), nd = m.videos.filter(v => dn0.includes(v.id)).length;
   const label = isNew(m) && !s ? '<span class="badge new">NUEVO</span>' : (m.jornada ? '<span class="badge">J' + m.jornada + '</span>' : (m.date ? '<span class="badge">' + esc(fmtDate(m.date)) + '</span>' : ''));
   const tint = t ? '<div class="tint" style="background:linear-gradient(115deg,' + teamColor(t[0]) + ' 0 49%,#060816 49% 51%,' + teamColor(t[1]) + ' 51% 100%)"></div>' : '';
   return '<button class="card" data-id="' + esc(m.id) + '"><div class="thumb"><img loading="lazy" alt="" src="' + thumb(m.videos[0].id) + '" onerror="this.remove()">' + tint +
     (m.jornada ? '<span class="jbig">J' + m.jornada + '</span>' : '') + (isNew(m) && !s ? label : '') +
-    (m.fcf && m.fcf.postponed ? '<span class="badge" style="left:auto;right:10px;background:#B45309">APLAZADO</span>' : '') + '<span class="dur">' + m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' cuartos') + '</span>' + (s ? '<span class="seen"></span>' : '') + '</div>' +
+    (m.fcf && m.fcf.postponed ? '<span class="badge" style="left:auto;right:10px;background:#B45309">APLAZADO</span>' : '') + '<span class="dur">' + (nd && nd === m.videos.length ? 'Visto' : nd ? nd + ' de ' + m.videos.length + ' vistos' : m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' cuartos')) + '</span>' + (s ? '<span class="seen" style="width:' + Math.max(8, Math.round(nd / m.videos.length * 100)) + '%"></span>' : '') + '</div>' +
     (t ? '<div class="mini">' + badge(t[0], 36, crestOf(m, t[0])) + '<span class="vs' + (m.score ? ' sc' : '') + '"' + (m.res ? ' style="color:' + (m.res === 'V' ? '#4ADE80' : m.res === 'D' ? '#FB7185' : 'var(--mute)') + '"' : '') + '>' + esc(m.score || 'VS') + '</span>' + badge(t[1], 36, crestOf(m, t[1])) + '</div>' : '<div class="mini">' + badge('Anguera', 36) + '</div>') +
     '<div class="ctitle">' + esc(m.title) + '</div></button>';
 }
@@ -609,11 +619,17 @@ function renderHome(push){
   const rd = $('#road'), now = rd && rd.querySelector('.now'); if (now) rd.scrollLeft = now.offsetLeft - rd.clientWidth / 2 + 30;
   countUp(); reveal(); startCD(); celebrate();
   clearInterval(heroTimer);
-  if (feat.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) heroTimer = setInterval(() => { if (view === 'home' && !document.hidden) { heroIdx = (heroIdx + 1) % feat.length; drawHero(feat); } }, 7000);
+  if (feat.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) heroTimer = setInterval(() => { if (view === 'home' && !document.hidden) { heroIdx = (heroIdx + 1) % feat.length; drawHero(feat); } }, 9000);
   window.scrollTo(0, 0);
   if (push) history.pushState(null, '', location.pathname);
 }
 function drawHero(feat){
+  heroFeat = feat;
+  const hz = $('#hero');
+  if (hz && !hz.dataset.sw) { hz.dataset.sw = '1'; let x0 = null;
+    hz.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+    hz.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 50 && heroFeat.length > 1) { clearInterval(heroTimer); heroIdx = (heroIdx + (dx < 0 ? 1 : -1) + heroFeat.length) % heroFeat.length; drawHero(heroFeat); } }, { passive: true }); }
   const m = feat[heroIdx], el = $('#hero'); if (!el || !m) return;
   el.innerHTML = '<div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 1600) + '" onerror="this.remove()"></div><div class="beam l"></div><div class="beam r"></div><div class="flood l"></div><div class="flood r"></div><img class="wm" src="' + CREST + '" alt=""><div class="in">' +
     '<div class="tag"><i></i>' + (heroIdx === 0 ? 'ÚLTIMO PARTIDO' : 'PARTIDO ANTERIOR') + (isNew(m) ? ' · NUEVO' : '') + (m.fcf && m.fcf.postponed ? ' · APLAZADO' : '') + '</div>' +
@@ -622,7 +638,7 @@ function drawHero(feat){
     '<button class="btn pri" id="heroPlay" style="height:56px;box-shadow:0 12px 30px #2f45d655"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Ver partido' + (m.videos.length > 1 ? ' · ' + m.videos.length + ' cuartos' : '') + '</button>' +
     (feat.length > 1 ? '<div class="dots">' + feat.map((_, i) => '<button aria-label="Partido ' + (i + 1) + '" class="' + (i === heroIdx ? 'on' : '') + '" data-h="' + i + '"></button>').join('') + '</div>' : '') + '</div>';
   $('#heroPlay').addEventListener('click', () => openMatch(m, false, true));
-  el.querySelectorAll('[data-h]').forEach(b => b.addEventListener('click', () => { heroIdx = +b.dataset.h; drawHero(feat); }));
+  el.querySelectorAll('[data-h]').forEach(b => b.addEventListener('click', () => { clearInterval(heroTimer); heroIdx = +b.dataset.h; drawHero(feat); }));
 }
 
 // ---- Temporada ----
@@ -643,7 +659,8 @@ function renderSeason(push){
 // ---- Partido ----
 function openMatch(m, noPush, fs){
   if (!m) return;
-  closeSearch(); leaveWatch(); view = 'watch'; current = m; setTab(null);
+  if (view === 'home' || view === 'season') back = { view, y: scrollY };
+  closeSearch(); leaveWatch(); view = 'watch'; current = m; setTab(null); $('#backBtn').hidden = false;
   seen = [m.id, ...seen.filter(x => x !== m.id)].slice(0, 300); store.set('partidos_seen', JSON.stringify(seen));
   const more = DATA.filter(x => x.id !== m.id && x.group === m.group).slice(0, 14);
   const n = m.videos.length;
@@ -653,22 +670,22 @@ function openMatch(m, noPush, fs){
     '<div class="stage"><div class="fsbar"><button class="fsb" id="fsClose" aria-label="Salir de pantalla completa">✕</button><button class="fsb" id="fsPrev" aria-label="Cuarto anterior">‹</button><span class="fsb" id="fsName"></span><button class="fsb" id="fsNext" aria-label="Cuarto siguiente">›</button>' +
     '<button class="fsb zt" aria-label="Zoom" aria-pressed="false">' + ZICO + '</button><button class="fsb" id="fsReset" aria-label="Quitar zoom" hidden>1x</button></div>' +
     '<div class="vid"><video id="vplayer" playsinline preload="metadata"></video><iframe id="frame" allow="autoplay; fullscreen" allowfullscreen title="Vídeo del partido"></iframe>' +
-    '<div class="zpad" id="zpad"></div><div class="ripple l" id="rl"></div><div class="ripple r" id="rr"></div><div class="spin"></div>' +
+    '<div class="zpad" id="zpad"></div><div class="hold" id="hold">2x ▸▸</div><div class="ripple l" id="rl"></div><div class="ripple r" id="rr"></div><div class="spin"></div>' +
     '<div class="resume" id="resume"><span id="resumeTxt"></span><button id="resumeStart">Desde el inicio</button></div>' +
     '<div class="ctl" id="ctl">' +
       '<div class="ctop"><span class="qpill" id="cQ"></span><span class="ttl">' + esc(m.title) + '</span><span class="sp"></span>' +
         (n > 1 ? '<button class="ib" id="cPrevQ" aria-label="Cuarto anterior">' + PREVQ + '</button><button class="ib" id="cNextQ" aria-label="Cuarto siguiente">' + NEXTQ + '</button>' : '') + '</div>' +
       '<div class="cmid"><button class="cb" id="cBack" aria-label="Retroceder 10 segundos">' + RW + '<small>10</small></button><button class="cb big" id="cPlay" aria-label="Reproducir">' + PLAYI + '</button><button class="cb" id="cFwd" aria-label="Avanzar 10 segundos">' + FW + '<small>10</small></button></div>' +
-      '<div class="cbot"><div class="bar" id="cBar" role="slider" aria-label="Posición del vídeo" tabindex="0"><div class="tr"><div class="bf" id="cBuf"></div><div class="pl" id="cPl"></div></div><div class="th" id="cTh"></div><div class="bub" id="cBub">0:00</div></div>' +
+      '<div class="cbot"><div class="bar" id="cBar" role="slider" aria-label="Posición del vídeo" tabindex="0"><div class="tr"><div class="bf" id="cBuf"></div><div class="pl" id="cPl"></div></div><div class="th" id="cTh"></div><div class="marks" id="cMarks"></div><div class="bub" id="cBub">0:00</div></div>' +
         '<div class="crow"><div class="tm"><b id="cTime">0:00</b> <span>/ <span id="cDur">0:00</span></span></div>' +
         '<button class="ib spd" id="cSpeed" aria-label="Velocidad">1x</button><button class="ib zt" id="cZoom" aria-label="Zoom">' + ZICO + '</button><button class="ib" id="cFS" aria-label="Pantalla completa">' + FSI + '</button></div></div>' +
     '</div>' +
     '<div class="zhint" id="zhint">Pellizca para ampliar · arrastra para moverte</div></div></div>' +
     '<div class="wbody">' + (n > 1 ? '<div class="qseg" style="--n:' + Math.min(n, 6) + '">' + m.videos.map((v, i) => { const q = partName(v.name).match(/^Quart (\d)$/); return '<button class="qs" data-q="' + i + '" title="' + esc(partName(v.name)) + '"><div class="tr"><i></i></div><b>' + (q ? 'Q' + q[1] : i + 1) + '</b><span></span></button>'; }).join('') + '</div>' : '') +
     '<div class="fsrow"><button class="btn pri" id="fsGo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Pantalla completa</button><button class="btn zbtn zt" aria-pressed="false">' + ZICO + 'Zoom</button></div>' +
-    '<div class="two"><button class="btn" id="share">Copiar enlace</button><a class="btn" id="open" target="_blank" rel="noopener">Abrir en Drive</a></div></div>' +
+    '<div class="two"><button class="btn" id="share">Compartir</button><a class="btn" id="open" target="_blank" rel="noopener">Abrir en Drive</a></div></div>' +
     fichaHTML(m) + rail('Más de ' + (m.group || 'la temporada'), more) + '</div>';
-  document.querySelectorAll('.qs').forEach(b => b.addEventListener('click', () => { play(+b.dataset.q); enterFS(); }));
+  document.querySelectorAll('.qs').forEach(b => b.addEventListener('click', () => { play(+b.dataset.q); if (mode !== 'native') enterFS(); }));
   $('#fsGo').addEventListener('click', enterFS);
   document.querySelectorAll('.zt').forEach(b => b.addEventListener('click', () => setZoomMode(!zoomMode)));
   $('#fsReset').addEventListener('click', () => { Z = { s: 1, x: 0, y: 0 }; applyZ(); });
@@ -680,7 +697,7 @@ function openMatch(m, noPush, fs){
   $('#fsNext').addEventListener('click', () => play(Math.min(n - 1, part + 1)));
   $('#share').addEventListener('click', () => share(m));
   $('#app').querySelectorAll('.sec').forEach(bind);
-  play(0);
+  { const dn = getDone(), i0 = m.videos.findIndex(v => !dn.includes(v.id)); play(i0 < 0 ? 0 : i0); }
   window.scrollTo(0, 0);
   if (!noPush) history.pushState(null, '', '?m=' + encodeURIComponent(m.id));
   if (fs) enterFS();
@@ -719,6 +736,7 @@ function loadMedia(v){
     return;
   }
   setMode('native'); f.src = 'about:blank';
+  if (!store.get('atv_tip')) { store.set('atv_tip', '1'); setTimeout(() => hint('Doble toque ±10 s · Mantén pulsado 2x'), 1500); }
   document.querySelector('.stage').classList.add('loading');
   vid.poster = thumb(v.id, 1280);
   vid.dataset.id = v.id;
@@ -768,6 +786,9 @@ function syncQ(){
   $('#cQ').textContent = q ? 'Q' + q[1] : (n > 1 ? (part + 1) + '/' + n : 'Vídeo');
   if ($('#cPrevQ')) { $('#cPrevQ').disabled = part === 0; $('#cNextQ').disabled = part === n - 1; }
   $('#cFS').innerHTML = isFS() ? FSX : FSI;
+  const a = current.fcf, per = 48 / n;   // goles de este cuarto, como marcas en la barra
+  $('#cMarks').innerHTML = a && a.goals ? a.goals.filter(g => g.min != null && Math.min(n - 1, Math.floor((g.min - 1) / per)) === part)
+    .map(g => '<i class="' + (g.ours ? '' : 'riv') + '" style="left:' + Math.min(99, ((g.min - 1) - part * per) / per * 100) + '%"></i>').join('') : '';
 }
 function bindPlayer(){
   const v = $('#vplayer'), st = document.querySelector('.stage');
@@ -844,25 +865,29 @@ function setZoomMode(on){
   hint(on ? 'Pellizca para ampliar · arrastra para moverte' : 'Zoom fijado · toca el vídeo para play/pausa');
   if (on && Z.s === 1) zoomAt(b.clientWidth / 2, b.clientHeight / 2, 2);
 }
-function hint(t){ const h = $('#zhint'); if (!h || !t) return; h.textContent = t; h.classList.add('on'); clearTimeout(hint.t); hint.t = setTimeout(() => h.classList.remove('on'), 2200); }
+function hint(t){ const h = $('#zhint'); if (!h || !t) return; h.textContent = t; h.classList.add('on'); clearTimeout(hint.t); hint.t = setTimeout(() => h.classList.remove('on'), 3500); }
 function bindZoom(pad){
   const pts = new Map(); let last = null, lastTap = 0, tapT = null, down = null, moved = false;
+  let holdT = null, held = false;
   const local = e => { const r = pad.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   pad.addEventListener('pointerdown', e => {
     pad.setPointerCapture(e.pointerId); pts.set(e.pointerId, local(e)); last = null;
-    if (pts.size === 1) { down = { t: Date.now(), p: local(e) }; moved = false; } else moved = true;
+    if (pts.size === 1) { down = { t: Date.now(), p: local(e) }; moved = false;
+      clearTimeout(holdT); holdT = setTimeout(() => { const v = $('#vplayer'); if (!moved && pts.size === 1 && mode === 'native' && v && !v.paused) { held = true; v.playbackRate = 2; $('#hold').classList.add('on'); $('#zhint').classList.remove('on'); hideCtl(); } }, 450);
+    } else { moved = true; clearTimeout(holdT); }
   });
   pad.addEventListener('pointermove', e => {
     if (!pts.has(e.pointerId)) return;
     const prev = pts.get(e.pointerId), cur = local(e); pts.set(e.pointerId, cur);
-    if (down && Math.hypot(cur[0] - down.p[0], cur[1] - down.p[1]) > 10) moved = true;
+    if (down && Math.hypot(cur[0] - down.p[0], cur[1] - down.p[1]) > 10) { moved = true; clearTimeout(holdT); }
     if (pts.size === 1) { if (Z.s > 1) { Z.x += cur[0] - prev[0]; Z.y += cur[1] - prev[1]; applyZ(); } return; }
     const [a, b] = [...pts.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
     if (last) { Z.x += mx - last.mx; Z.y += my - last.my; zoomAt(mx, my, Z.s * d / last.d); document.querySelectorAll('.zt').forEach(x => x.classList.toggle('on', Z.s > 1 || zoomMode)); }
     last = { d, mx, my };
   });
   const up = e => {
-    pts.delete(e.pointerId); last = null;
+    pts.delete(e.pointerId); last = null; clearTimeout(holdT);
+    if (held) { held = false; const v = $('#vplayer'); if (v) v.playbackRate = +($('#cSpeed').textContent.replace('x', '')) || 1; $('#hold').classList.remove('on'); down = null; return; }
     if (pts.size || !down || moved || Date.now() - down.t > 300) return;
     const [x] = down.p, w = pad.clientWidth, now = Date.now();
     if (now - lastTap < 300) {            // doble toque
@@ -883,7 +908,7 @@ function leaveWatch(){
   zoomMode = false; Z = { s: 1, x: 0, y: 0 };
   const vp = $('#vplayer'); if (vp) { vp.pause(); vp.removeAttribute('src'); vp.load(); }
   if (document.fullscreenElement || document.webkitFullscreenElement) exitFS();
-  document.body.style.overflow = ''; current = null; clearInterval(heroTimer); clearInterval(cdTimer);
+  document.body.style.overflow = ''; current = null; clearInterval(heroTimer); clearInterval(cdTimer); $('#backBtn').hidden = true;
 }
 
 // ---- Progreso de cada cuarto (visto / viendo) y contadores animados ----
@@ -932,6 +957,7 @@ document.addEventListener('webkitfullscreenchange', onFS);
 // ---- Compartir y buscar ----
 function share(m){
   const url = APP_URL + '?m=' + encodeURIComponent(m.id);
+  if (navigator.share) { navigator.share({ title: 'Anguera TV', text: m.title, url }).catch(() => {}); return; }
   const done = () => toast('Enlace copiado');
   const fallback = () => { const t = document.createElement('textarea'); t.value = url; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); done(); } catch (e) { toast(url); } t.remove(); };
   if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, fallback); else fallback();
@@ -940,7 +966,11 @@ function openSearch(){ $('#search').classList.add('open'); document.body.style.o
 function closeSearch(){ $('#search').classList.remove('open'); if (!isFS()) document.body.style.overflow = ''; }
 function doSearch(){
   const q = norm($('#q').value.trim());
-  const list = DATA.filter(m => !q || norm([m.title, m.group, fmtDate(m.date), m.jornada ? 'j' + m.jornada + ' jornada ' + m.jornada : ''].join(' ')).includes(q));
+  const opts = [['', 'Todos'], ['__new', 'Sin ver'], ['__win', 'Victorias'], ...groups().map(g => [g, g])];
+  $('#schips').innerHTML = opts.map(o => '<button class="chip' + (o[0] === sFilter ? ' on' : '') + '" data-f="' + esc(o[0]) + '">' + esc(o[1]) + '</button>').join('');
+  $('#schips').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sFilter = c.dataset.f; doSearch(); }));
+  const pass = m => !sFilter || (sFilter === '__new' ? !seen.includes(m.id) : sFilter === '__win' ? m.res === 'V' : m.group === sFilter);
+  const list = DATA.filter(m => pass(m) && (!q || norm([m.title, m.group, fmtDate(m.date), m.jornada ? 'j' + m.jornada + ' jornada ' + m.jornada : ''].join(' ')).includes(q)));
   $('#results').innerHTML = list.length ? list.map(card).join('') : '<div class="center" style="min-height:0;padding:40px 0">Sin resultados</div>';
   bind($('#results'));
 }
@@ -956,7 +986,7 @@ function jumpGoal(min){
   else { pendingSeek = frac; play(q); }
   if (mode === 'native') { const p = v.play(); if (p && p.catch) p.catch(() => {}); toast('Minuto ' + min + " · " + (n === 4 ? 'Q' + (q + 1) : 'vídeo ' + (q + 1)) + ' (aprox.)'); }
   else { pendingSeek = null; toast('Ve al minuto ' + Math.round(frac * per) + ' de este vídeo'); }
-  document.querySelector('.stage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const sr = document.querySelector('.stage').getBoundingClientRect(); if (sr.top < 0 || sr.bottom > innerHeight) document.querySelector('.stage').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 // ---- Efectos ----
@@ -1055,7 +1085,8 @@ $('#closeSearch').addEventListener('click', closeSearch);
 $('#q').addEventListener('input', doSearch);
 document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (document.querySelector('.stage.pfs')) exitFS(); else if ($('#search').classList.contains('open')) closeSearch(); else if (view === 'watch') renderHome(true); });
 window.addEventListener('scroll', () => { $('#top').classList.toggle('solid', scrollY > 40); const b = document.querySelector('.hero .bg'); if (b && scrollY < 900 && !calm()) b.style.transform = 'translateY(' + scrollY * .3 + 'px)'; }, { passive: true });
-window.addEventListener('popstate', route);
+window.addEventListener('popstate', () => { const b = back; back = null; route(); if (b && view === b.view) requestAnimationFrame(() => window.scrollTo(0, b.y)); });
+$('#backBtn').addEventListener('click', () => { if (back) history.back(); else renderHome(true); });
 load();
 
 // ---- Aviso de instalación (solo si no está instalada) ----
