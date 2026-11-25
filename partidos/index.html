@@ -374,11 +374,16 @@ button.goal:active{background:#ffffff0f}
 .pod.p1 .st b,.pod.p1 .st span{color:#14163a}
 .pod.p1 .n{background:#FFD21F;color:#14163a;width:52px;height:52px;border-radius:26px;box-shadow:0 0 24px #ffd21f88}
 .pod.p2 .st{height:94px}
+.btn.pri::after{display:none}
+.next{animation:none}
+.hero{height:min(74vh,580px);min-height:500px}
+.hero .bg img{opacity:.7}
+.jbig{font-size:56px;-webkit-text-stroke:1.5px #ffffffd9}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="splash" id="splash"><div class="intro"><span class="ring"></span><img src="icons/escudo.png" alt="PB Anguera"><div class="wd"><span>ANGUERA <b>TV</b></span></div><div class="ln"></div></div></div>
+<div class="splash" id="splash"><img src="icons/escudo.png" alt="PB Anguera"></div>
 
 <header class="top" id="top">
   <button class="icon" id="backBtn" aria-label="Volver" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
@@ -507,10 +512,10 @@ function roadHTML(){
 function card(m){
   const s = seen.includes(m.id), t = teams(m.title), dn0 = getDone(), nd = m.videos.filter(v => dn0.includes(v.id)).length;
   const label = isNew(m) && !s ? '<span class="badge new">NUEVO</span>' : (m.jornada ? '<span class="badge">J' + m.jornada + '</span>' : (m.date ? '<span class="badge">' + esc(fmtDate(m.date)) + '</span>' : ''));
-  const tint = t ? '<div class="tint" style="background:linear-gradient(115deg,' + teamColor(t[0]) + ' 0 49%,#060816 49% 51%,' + teamColor(t[1]) + ' 51% 100%)"></div>' : '';
+  const tint = '';
   return '<button class="card" data-id="' + esc(m.id) + '"><div class="thumb"><img loading="lazy" alt="" src="' + thumb(m.videos[0].id) + '" onerror="this.remove()">' + tint +
     (m.jornada ? '<span class="jbig">J' + m.jornada + '</span>' : '') + (isNew(m) && !s ? label : '') +
-    (m.fcf && m.fcf.postponed ? '<span class="badge" style="left:auto;right:10px;background:#B45309">APLAZADO</span>' : '') + '<span class="dur">' + (nd && nd === m.videos.length ? 'Visto' : nd ? nd + ' de ' + m.videos.length + ' vistos' : m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' cuartos')) + '</span>' + (s ? '<span class="seen" style="width:' + Math.max(8, Math.round(nd / m.videos.length * 100)) + '%"></span>' : '') + '</div>' +
+    '<span class="dur">' + (nd && nd === m.videos.length ? 'Visto' : nd ? nd + ' de ' + m.videos.length + ' vistos' : m.videos.length + (m.videos.length === 1 ? ' vídeo' : ' cuartos')) + '</span>' + (s ? '<span class="seen" style="width:' + Math.max(8, Math.round(nd / m.videos.length * 100)) + '%"></span>' : '') + '</div>' +
     (t ? '<div class="mini">' + badge(t[0], 36, crestOf(m, t[0])) + '<span class="vs' + (m.score ? ' sc' : '') + '"' + (m.res ? ' style="color:' + (m.res === 'V' ? '#4ADE80' : m.res === 'D' ? '#FB7185' : 'var(--mute)') + '"' : '') + '>' + esc(m.score || 'VS') + '</span>' + badge(t[1], 36, crestOf(m, t[1])) + '</div>' : '<div class="mini">' + badge('Anguera', 36) + '</div>') +
     '<div class="ctitle">' + esc(m.title) + '</div></button>';
 }
@@ -617,7 +622,7 @@ function renderHome(push){
   bind($('#app'));
   heroIdx = 0; drawHero(feat);
   const rd = $('#road'), now = rd && rd.querySelector('.now'); if (now) rd.scrollLeft = now.offsetLeft - rd.clientWidth / 2 + 30;
-  countUp(); reveal(); startCD(); celebrate();
+  countUp(); reveal(); startCD();
   clearInterval(heroTimer);
   if (feat.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) heroTimer = setInterval(() => { if (view === 'home' && !document.hidden) { heroIdx = (heroIdx + 1) % feat.length; drawHero(feat); } }, 9000);
   window.scrollTo(0, 0);
@@ -631,10 +636,9 @@ function drawHero(feat){
     hz.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null;
       if (Math.abs(dx) > 50 && heroFeat.length > 1) { clearInterval(heroTimer); heroIdx = (heroIdx + (dx < 0 ? 1 : -1) + heroFeat.length) % heroFeat.length; drawHero(heroFeat); } }, { passive: true }); }
   const m = feat[heroIdx], el = $('#hero'); if (!el || !m) return;
-  el.innerHTML = '<div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 1600) + '" onerror="this.remove()"></div><div class="beam l"></div><div class="beam r"></div><div class="flood l"></div><div class="flood r"></div><img class="wm" src="' + CREST + '" alt=""><div class="in">' +
-    '<div class="tag"><i></i>' + (heroIdx === 0 ? 'ÚLTIMO PARTIDO' : 'PARTIDO ANTERIOR') + (isNew(m) ? ' · NUEVO' : '') + (m.fcf && m.fcf.postponed ? ' · APLAZADO' : '') + '</div>' +
-    bugHTML(m) + duel(m, 84) + resChip(m) +
-    '<div class="meta">' + esc([m.group, m.fcf ? (m.fcf.angueraHome ? 'En casa' : 'Fuera') : ''].filter(Boolean).join('  ·  ')) + '</div>' +
+  el.innerHTML = '<div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 1600) + '" onerror="this.remove()"></div><div class="in">' +
+    '<div class="tag"><i></i>' + esc([heroIdx === 0 ? 'ÚLTIMO PARTIDO' : 'PARTIDO ANTERIOR', m.jornada ? 'J' + m.jornada : '', m.date ? DIAS[new Date(m.date).getDay()] + ' ' + new Date(m.date).getDate() + ' ' + MONTHS[new Date(m.date).getMonth()] : ''].filter(Boolean).join(' · ')) + '</div>' +
+    duel(m, 84) + resChip(m) +
     '<button class="btn pri" id="heroPlay" style="height:56px;box-shadow:0 12px 30px #2f45d655"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Ver partido' + (m.videos.length > 1 ? ' · ' + m.videos.length + ' cuartos' : '') + '</button>' +
     (feat.length > 1 ? '<div class="dots">' + feat.map((_, i) => '<button aria-label="Partido ' + (i + 1) + '" class="' + (i === heroIdx ? 'on' : '') + '" data-h="' + i + '"></button>').join('') + '</div>' : '') + '</div>';
   $('#heroPlay').addEventListener('click', () => openMatch(m, false, true));
@@ -665,7 +669,7 @@ function openMatch(m, noPush, fs){
   const more = DATA.filter(x => x.id !== m.id && x.group === m.group).slice(0, 14);
   const n = m.videos.length;
   const tt = teams(m.title);
-  $('#app').innerHTML = '<div class="view"><section class="mhead">' + (tt ? '<div class="split" style="background:linear-gradient(105deg,' + teamColor(tt[0]) + ' 0 50%,' + teamColor(tt[1]) + ' 50% 100%)"></div>' : '') + '<div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 800) + '" onerror="this.remove()"></div><img class="wm" src="' + CREST + '" alt=""><div class="in">' +
+  $('#app').innerHTML = '<div class="view"><section class="mhead">' + (tt ? '<div class="split" style="background:linear-gradient(105deg,' + teamColor(tt[0]) + ' 0 50%,' + teamColor(tt[1]) + ' 50% 100%)"></div>' : '') + '<div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 800) + '" onerror="this.remove()"></div><div class="in">' +
     bugHTML(m) + duel(m, 80) + resChip(m) + '</div></section>' +
     '<div class="stage"><div class="fsbar"><button class="fsb" id="fsClose" aria-label="Salir de pantalla completa">✕</button><button class="fsb" id="fsPrev" aria-label="Cuarto anterior">‹</button><span class="fsb" id="fsName"></span><button class="fsb" id="fsNext" aria-label="Cuarto siguiente">›</button>' +
     '<button class="fsb zt" aria-label="Zoom" aria-pressed="false">' + ZICO + '</button><button class="fsb" id="fsReset" aria-label="Quitar zoom" hidden>1x</button></div>' +
@@ -1072,7 +1076,7 @@ function load(){
     .then(res => { if (!res.matches || !res.matches.length) throw 0; return res.matches; })
     .catch(() => { DEMO = true; document.body.classList.add('demo'); return SAMPLE; })
     .then(list => { DATA = list; return fetch('fcf.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null); })
-    .then(f => { FCF = f; mergeFCF(); route(); let seenIntro = false; try { seenIntro = !!sessionStorage.getItem('atv_intro'); sessionStorage.setItem('atv_intro', '1'); } catch (e) {} setTimeout(() => $('#splash').classList.add('off'), seenIntro || calm() ? 200 : Math.max(200, 1600 - performance.now())); });
+    .then(f => { FCF = f; mergeFCF(); route(); let seenIntro = false; try { seenIntro = !!sessionStorage.getItem('atv_intro'); sessionStorage.setItem('atv_intro', '1'); } catch (e) {} setTimeout(() => $('#splash').classList.add('off'), 200); });
 }
 
 // ---- Eventos ----
