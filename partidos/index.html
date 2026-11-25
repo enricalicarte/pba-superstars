@@ -616,13 +616,12 @@ function renderHome(push){
 }
 function drawHero(feat){
   const m = feat[heroIdx], el = $('#hero'); if (!el || !m) return;
-  el.innerHTML = '<div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 1600) + '" onerror="this.remove()"></div><div class="beam l"></div><div class="beam r"></div><div class="flood l"></div><div class="flood r"></div><img class="wm" src="' + CREST + '" alt=""><canvas class="fx" id="fx"></canvas><div class="in">' +
+  el.innerHTML = '<div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 1600) + '" onerror="this.remove()"></div><div class="beam l"></div><div class="beam r"></div><div class="flood l"></div><div class="flood r"></div><img class="wm" src="' + CREST + '" alt=""><div class="in">' +
     '<div class="tag"><i></i>' + (heroIdx === 0 ? 'ÚLTIMO PARTIDO' : 'PARTIDO ANTERIOR') + (isNew(m) ? ' · NUEVO' : '') + (m.fcf && m.fcf.postponed ? ' · APLAZADO' : '') + '</div>' +
     bugHTML(m) + duel(m, 84) + resChip(m) +
     '<div class="meta">' + esc([m.group, m.fcf ? (m.fcf.angueraHome ? 'En casa' : 'Fuera') : ''].filter(Boolean).join('  ·  ')) + '</div>' +
     '<button class="btn pri" id="heroPlay" style="height:56px;box-shadow:0 12px 30px #2f45d655"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Ver partido' + (m.videos.length > 1 ? ' · ' + m.videos.length + ' cuartos' : '') + '</button>' +
     (feat.length > 1 ? '<div class="dots">' + feat.map((_, i) => '<button aria-label="Partido ' + (i + 1) + '" class="' + (i === heroIdx ? 'on' : '') + '" data-h="' + i + '"></button>').join('') + '</div>' : '') + '</div>';
-  startFx();
   $('#heroPlay').addEventListener('click', () => openMatch(m, false, true));
   el.querySelectorAll('[data-h]').forEach(b => b.addEventListener('click', () => { heroIdx = +b.dataset.h; drawHero(feat); }));
 }
