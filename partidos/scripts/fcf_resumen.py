@@ -53,6 +53,15 @@ def parse_acta(lines, raw_html=''):
                 score = [int(L[i + 2]), int(L[i + 4])]
             break
     ang_home = TEAM_KEY in norm(home)
+    # Jugadores del Anguera según la alineación del acta (para detectar goles en propia puerta)
+    ang_names = set()
+    for k, x in enumerate(L):
+        if x == 'TITULARS' and k + 1 < len(L) and TEAM_KEY in norm(L[k + 1]):
+            for y in L[k + 2:]:
+                if y in ('EQUIP TÈCNIC', 'ÀRBITRES', 'GOLS'):
+                    break
+                if re.search(r'[A-Za-zÀ-ÿ]{2}', y) and y not in ('SUPLENTS', 'C') and not y.endswith('’'):
+                    ang_names.add(y.strip())
     # Goles: "a - b", "(", "min", "')", "dorsal", "NOMBRE"
     goals, prev = [], (0, 0)
     try:
@@ -69,9 +78,14 @@ def parse_acta(lines, raw_html=''):
             home_scored = a > prev[0]
             ours = home_scored == ang_home
             g = {'min': int(L[i + 2]) if L[i + 2].isdigit() else None, 'score': f'{a}-{b}', 'ours': ours}
-            if ours:
+            scorer = L[i + 5].strip()
+            if ours and ang_names and scorer not in ang_names:
+                g['og'] = True          # gol en propia puerta del rival: cuenta para el Anguera, sin nombre
+            elif not ours and scorer in ang_names:
+                g['og'] = True          # gol en propia puerta del Anguera: sin nombre
+            elif ours:
                 g['dorsal'] = L[i + 4] if L[i + 4].isdigit() else ''
-                g['name'] = nombre_pila(L[i + 5])
+                g['name'] = nombre_pila(scorer)
             goals.append(g)
             prev = (a, b)
             i += 6
