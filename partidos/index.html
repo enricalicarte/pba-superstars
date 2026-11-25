@@ -70,6 +70,9 @@ body.demo .demotag{display:inline-block}
 .goal .w i{font-style:normal;color:var(--mute);font-weight:600}
 .goal .s{font:800 15px 'Barlow Condensed',sans-serif;color:var(--mute);white-space:nowrap}
 .goal.riv{opacity:.55}
+button.goal{font:inherit;color:inherit;background:none;border:0;border-bottom:1px solid var(--line);width:100%;text-align:left;cursor:pointer}
+button.goal:active{background:#ffffff0f}
+.goal .go{width:30px;height:30px;border-radius:15px;background:var(--acc);color:#fff;display:grid;place-items:center;flex:none}
 .goal.riv .m{color:var(--mute)}
 .cell.novid{opacity:.6;cursor:default}
 .cell.pend{background:transparent;border-style:dashed;cursor:default}
@@ -545,15 +548,16 @@ function seasonStatsHTML(){
     podiumHTML(top) + (top.length > 3 ? '<div class="scorers">' + top.slice(3).map(([k, n]) => { const [nm, dn] = k.split('#'); return '<div class="scorer"><span class="n">' + esc(dn || '·') + '</span>' + esc(nm) + ' <i>× ' + n + '</i></div>'; }).join('') + '</div>' : '') +
     '<div style="padding:8px max(4vw,18px) 0;color:var(--mute);font-size:12px">* Goles reales de las actas. En el marcador oficial la diferencia máxima es de 10.</div></section>';
 }
+const PLAYS = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>';
 const BALL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="vertical-align:-3px"><circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 5h-5L8 10z"/></svg>';
 function fichaHTML(m){
   const a = m.fcf; if (!a) return '';
   const d = a.date ? new Date(a.date + 'T12:00:00') : null;
   const goals = a.goals || [];
-  return '<section class="sec"><div class="shead"><h2>Ficha del partido</h2><span class="lnk" style="cursor:default">Acta FCF</span></div><div class="ficha">' +
+  return '<section class="sec"><div class="shead"><h2>Ficha del partido</h2><span class="lnk" style="cursor:default">Toca un gol para verlo</span></div><div class="ficha">' +
     '<div class="finfo">' + (m.real ? '<span><b>Oficial ' + esc(m.score) + '</b> · goles reales ' + esc(m.real) + '</span>' : '') + (a.postponed ? '<span class="res" style="background:#B45309">APLAZADO</span>' : '') + '<span><b>' + (d ? DIAS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] : '') + '</b> · ' + esc(a.time) + 'h</span><span>' + esc(a.stadium) + '</span><span>' + (a.angueraHome ? 'En casa' : 'Fuera') + '</span></div>' +
     (goals.length ? goals.map(g => g.ours
-      ? '<div class="goal"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">' + BALL + ' ' + esc(g.og ? 'Gol en propia puerta del rival' : (g.name || 'Gol')) + (g.dorsal ? ' <i>#' + esc(g.dorsal) + '</i>' : '') + '</span><span class="s">' + esc(g.score) + '</span></div>'
+      ? '<button class="goal" data-min="' + (g.min != null ? g.min : '') + '"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">' + BALL + ' ' + esc(g.og ? 'Gol en propia puerta del rival' : (g.name || 'Gol')) + (g.dorsal ? ' <i>#' + esc(g.dorsal) + '</i>' : '') + '</span><span class="s">' + esc(g.score) + '</span><span class="go">' + PLAYS + '</span></button>'
       : '<div class="goal riv"><span class="m">' + (g.min != null ? g.min + "'" : '') + '</span><span class="w">' + (g.og ? 'Gol en propia puerta' : 'Gol del rival') + '</span><span class="s">' + esc(g.score) + '</span></div>').join('')
       : '<div class="goal"><span class="w" style="color:var(--mute);font-weight:600">' + (a.score ? 'Sin goles registrados en el acta' : 'Partido pendiente') + '</span></div>') +
     '</div></section>';
@@ -671,6 +675,7 @@ function openMatch(m, noPush, fs){
   $('#fsReset').addEventListener('click', () => { Z = { s: 1, x: 0, y: 0 }; applyZ(); });
   bindZoom($('#zpad'));
   bindPlayer();
+  document.querySelectorAll('button.goal').forEach(b => b.addEventListener('click', () => { if (b.dataset.min) jumpGoal(+b.dataset.min); }));
   $('#fsClose').addEventListener('click', exitFS);
   $('#fsPrev').addEventListener('click', () => play(Math.max(0, part - 1)));
   $('#fsNext').addEventListener('click', () => play(Math.min(n - 1, part + 1)));
@@ -770,6 +775,7 @@ function bindPlayer(){
   v.addEventListener('error', fallbackToDrive);
   v.addEventListener('loadedmetadata', () => {
     $('#cDur').textContent = fmtT(v.duration); drawBar();
+    if (pendingSeek != null) { v.currentTime = Math.max(0, pendingSeek * v.duration - 20); pendingSeek = null; return; }
     const t = getPos()[v.dataset.id];
     if (t && t < v.duration - 20) {
       v.currentTime = t; $('#resumeTxt').textContent = 'Continúas en ' + fmtT(t); $('#resume').classList.add('on');
@@ -940,6 +946,19 @@ function doSearch(){
   bind($('#results'));
 }
 function setTab(id){ ['tHome', 'tSeason'].forEach(t => $('#' + t).classList.toggle('on', t === id)); }
+
+// ---- Saltar a un gol: el minuto del acta se reparte entre los cuartos (partido de 48 min) ----
+let pendingSeek = null;
+function jumpGoal(min){
+  if (!current) return;
+  const n = current.videos.length, per = 48 / n, q = Math.min(n - 1, Math.floor((min - 1) / per)), frac = Math.max(0, ((min - 1) - q * per) / per);
+  const v = $('#vplayer');
+  if (q === part && mode === 'native' && isFinite(v.duration)) v.currentTime = Math.max(0, frac * v.duration - 20);
+  else { pendingSeek = frac; play(q); }
+  if (mode === 'native') { const p = v.play(); if (p && p.catch) p.catch(() => {}); toast('Minuto ' + min + " · " + (n === 4 ? 'Q' + (q + 1) : 'vídeo ' + (q + 1)) + ' (aprox.)'); }
+  else { pendingSeek = null; toast('Ve al minuto ' + Math.round(frac * per) + ' de este vídeo'); }
+  document.querySelector('.stage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
 // ---- Efectos ----
 function calm(){ return matchMedia('(prefers-reduced-motion: reduce)').matches; }
