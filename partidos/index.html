@@ -107,19 +107,28 @@ body.demo .demotag{display:inline-block}
 .mhead::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#07090c 0%,#07090cbf 55%,#07090c80)}
 .mhead .in{position:relative;z-index:1;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 .stage{width:100%;max-width:1100px;margin:0 auto;aspect-ratio:16/9;background:#000;position:relative}
-.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid{position:absolute;inset:0;overflow:hidden;background:#000}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0;transform-origin:0 0}
+.zpad{position:absolute;inset:0;display:none;touch-action:none;cursor:grab;z-index:2}
+.zoomon .zpad{display:block}
+.zoomon .vid{box-shadow:inset 0 0 0 3px var(--acc)}
+.zhint{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:#000c;color:#fff;font-size:13px;font-weight:600;padding:6px 12px;border-radius:16px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .3s;z-index:3}
+.zhint.on{opacity:1}
+.fsb.on{background:var(--acc);color:var(--accInk)}
 .wbody{max-width:1100px;margin:0 auto;padding:16px max(4vw,18px) 0;display:flex;flex-direction:column;gap:12px}
 .qtabs{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:8px}
 .qtab{height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--s1);font:900 20px 'Barlow Condensed',sans-serif;cursor:pointer}
 .qtab.on{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
 .two{display:flex;gap:8px}
 .two .btn{flex:1;height:46px;font-weight:600;font-size:15px}
+.fsrow{display:flex;gap:8px}.fsrow .pri{flex:1}.fsrow .zbtn{flex:none;width:auto;padding:0 16px;height:50px}
+.zbtn.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
 
 /* Pantalla completa (real o simulada en iPhone): controles en columna, nunca encima del vídeo */
 .stage:fullscreen{max-width:none;width:100vw;height:100vh;aspect-ratio:auto;display:flex}
 .stage:-webkit-full-screen{max-width:none;width:100vw;height:100vh;aspect-ratio:auto;display:flex}
 .stage.pfs{position:fixed;inset:0;z-index:60;max-width:none;width:100vw;height:100vh;height:100dvh;aspect-ratio:auto;display:flex}
-.stage:fullscreen iframe,.stage:-webkit-full-screen iframe,.stage.pfs iframe{position:relative;inset:auto;flex:1;min-width:0;height:100%}
+.stage:fullscreen .vid,.stage:-webkit-full-screen .vid,.stage.pfs .vid{position:relative;inset:auto;flex:1;min-width:0;height:100%}
 .fsbar{display:none;flex:none;align-items:center;justify-content:center;gap:10px;background:#000;padding:calc(env(safe-area-inset-top) + 8px) 8px 8px calc(env(safe-area-inset-left) + 8px)}
 .stage:fullscreen .fsbar,.stage:-webkit-full-screen .fsbar,.stage.pfs .fsbar{display:flex;flex-direction:column;width:calc(env(safe-area-inset-left) + 64px)}
 .fsb{width:48px;height:48px;border-radius:50%;border:0;background:#1b2028;color:#fff;font:800 16px 'Barlow Condensed',sans-serif;display:grid;place-items:center;cursor:pointer;padding:0}
@@ -323,14 +332,18 @@ function openMatch(m, noPush, fs){
   const n = m.videos.length;
   $('#app').innerHTML = '<div class="view"><section class="mhead"><div class="bg"><img alt="" src="' + thumb(m.videos[0].id, 800) + '" onerror="this.remove()"></div><div class="in">' +
     '<div class="tag"><i></i>' + esc([m.jornada ? 'JORNADA ' + m.jornada : '', fmtDate(m.date), m.group].filter(Boolean).join(' · ') || 'PARTIDO') + '</div>' + matchup(m, 72) + '</div></section>' +
-    '<div class="stage"><div class="fsbar"><button class="fsb" id="fsClose" aria-label="Salir de pantalla completa">✕</button><button class="fsb" id="fsPrev" aria-label="Cuarto anterior">‹</button><span class="fsb" id="fsName"></span><button class="fsb" id="fsNext" aria-label="Cuarto siguiente">›</button></div>' +
-    '<iframe id="frame" allow="autoplay; fullscreen" allowfullscreen title="Vídeo del partido"></iframe></div>' +
+    '<div class="stage"><div class="fsbar"><button class="fsb" id="fsClose" aria-label="Salir de pantalla completa">✕</button><button class="fsb" id="fsPrev" aria-label="Cuarto anterior">‹</button><span class="fsb" id="fsName"></span><button class="fsb" id="fsNext" aria-label="Cuarto siguiente">›</button>' +
+    '<button class="fsb zt" aria-label="Zoom" aria-pressed="false">' + ZICO + '</button><button class="fsb" id="fsReset" aria-label="Quitar zoom" hidden>1x</button></div>' +
+    '<div class="vid"><iframe id="frame" allow="autoplay; fullscreen" allowfullscreen title="Vídeo del partido"></iframe><div class="zpad" id="zpad"></div><div class="zhint" id="zhint">Pellizca para ampliar · arrastra para moverte</div></div></div>' +
     '<div class="wbody">' + (n > 1 ? '<div class="qtabs" style="--n:' + Math.min(n, 6) + '">' + m.videos.map((v, i) => { const q = partName(v.name).match(/^Quart (\d)$/); return '<button class="qtab" data-q="' + i + '" title="' + esc(partName(v.name)) + '">' + (q ? 'Q' + q[1] : i + 1) + '</button>'; }).join('') + '</div>' : '') +
-    '<button class="btn pri" id="fsGo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Ver a pantalla completa</button>' +
+    '<div class="fsrow"><button class="btn pri" id="fsGo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Pantalla completa</button><button class="btn zbtn zt" aria-pressed="false">' + ZICO + 'Zoom</button></div>' +
     '<div class="two"><button class="btn" id="share">Copiar enlace</button><a class="btn" id="open" target="_blank" rel="noopener">Abrir en Drive</a></div></div>' +
     rail('Más de ' + (m.group || 'la temporada'), more) + '</div>';
   document.querySelectorAll('.qtab').forEach(b => b.addEventListener('click', () => { play(+b.dataset.q); enterFS(); }));
   $('#fsGo').addEventListener('click', enterFS);
+  document.querySelectorAll('.zt').forEach(b => b.addEventListener('click', () => setZoomMode(!zoomMode)));
+  $('#fsReset').addEventListener('click', () => { Z = { s: 1, x: 0, y: 0 }; applyZ(); });
+  bindZoom($('#zpad'));
   $('#fsClose').addEventListener('click', exitFS);
   $('#fsPrev').addEventListener('click', () => play(Math.max(0, part - 1)));
   $('#fsNext').addEventListener('click', () => play(Math.min(n - 1, part + 1)));
@@ -343,6 +356,7 @@ function openMatch(m, noPush, fs){
 }
 function play(i){
   const v = current.videos[i]; part = i;
+  Z = { s: 1, x: 0, y: 0 }; applyZ();
   $('#frame').src = DEMO ? DEMO_SRC : 'https://drive.google.com/file/d/' + encodeURIComponent(v.id) + '/preview';
   $('#open').href = 'https://drive.google.com/file/d/' + encodeURIComponent(v.id) + '/view';
   document.querySelectorAll('.qtab').forEach(b => b.classList.toggle('on', +b.dataset.q === i));
@@ -351,7 +365,49 @@ function play(i){
   $('#fsName').hidden = $('#fsPrev').hidden = $('#fsNext').hidden = !many;
   $('#fsPrev').disabled = i === 0; $('#fsNext').disabled = i === current.videos.length - 1;
 }
+// ---- Zoom: capa táctil encima del vídeo (pellizcar, arrastrar, doble toque, rueda del ratón) ----
+const ZICO = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M11 8v6M8 11h6"/></svg>';
+let Z = { s: 1, x: 0, y: 0 }, zoomMode = false;
+function applyZ(){
+  const f = $('#frame'), box = document.querySelector('.vid'); if (!f || !box) return;
+  const w = box.clientWidth, h = box.clientHeight;
+  Z.s = Math.min(5, Math.max(1, Z.s));
+  Z.x = Math.min(0, Math.max(w - w * Z.s, Z.x)); Z.y = Math.min(0, Math.max(h - h * Z.s, Z.y));
+  f.style.transform = Z.s === 1 ? '' : 'translate(' + Z.x + 'px,' + Z.y + 'px) scale(' + Z.s + ')';
+  const r = $('#fsReset'); if (r) r.hidden = Z.s === 1;
+}
+function zoomAt(px, py, ns){ Z.x = px - (px - Z.x) * (ns / Z.s); Z.y = py - (py - Z.y) * (ns / Z.s); Z.s = ns; applyZ(); }
+function setZoomMode(on){
+  zoomMode = on;
+  const st = document.querySelector('.stage'); if (st) st.classList.toggle('zoomon', on);
+  document.querySelectorAll('.zt').forEach(b => { b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  const hint = $('#zhint');
+  if (hint) { hint.textContent = on ? 'Pellizca para ampliar · arrastra para moverte' : 'Zoom fijado · toca el vídeo para play/pausa'; hint.classList.add('on'); clearTimeout(setZoomMode.t); setZoomMode.t = setTimeout(() => hint.classList.remove('on'), 2200); }
+  if (on && Z.s === 1) { const b = document.querySelector('.vid'); zoomAt(b.clientWidth / 2, b.clientHeight / 2, 2); }
+}
+function bindZoom(pad){
+  const pts = new Map(); let last = null, lastTap = 0;
+  const local = e => { const r = pad.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  pad.addEventListener('pointerdown', e => {
+    pad.setPointerCapture(e.pointerId); pts.set(e.pointerId, local(e)); last = null;
+    if (pts.size === 1) { const now = Date.now(); if (now - lastTap < 300) { const [x, y] = local(e); zoomAt(x, y, Z.s > 1.2 ? 1 : 2.5); } lastTap = now; }
+  });
+  pad.addEventListener('pointermove', e => {
+    if (!pts.has(e.pointerId)) return;
+    const prev = pts.get(e.pointerId), cur = local(e); pts.set(e.pointerId, cur);
+    if (pts.size === 1) { Z.x += cur[0] - prev[0]; Z.y += cur[1] - prev[1]; applyZ(); return; }
+    const [a, b] = [...pts.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+    if (last) { Z.x += mx - last.mx; Z.y += my - last.my; zoomAt(mx, my, Z.s * d / last.d); }
+    last = { d, mx, my };
+  });
+  const up = e => { pts.delete(e.pointerId); last = null; };
+  pad.addEventListener('pointerup', up); pad.addEventListener('pointercancel', up);
+  pad.addEventListener('wheel', e => { e.preventDefault(); const [x, y] = local(e); zoomAt(x, y, Z.s * (e.deltaY < 0 ? 1.15 : 1 / 1.15)); }, { passive: false });
+}
+window.addEventListener('resize', () => applyZ());
+
 function leaveWatch(){
+  zoomMode = false; Z = { s: 1, x: 0, y: 0 };
   if (document.fullscreenElement || document.webkitFullscreenElement) exitFS();
   document.body.style.overflow = ''; current = null; clearInterval(heroTimer);
 }
