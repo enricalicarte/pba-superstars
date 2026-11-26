@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Eventos anónimos de la web: cualquiera puede apuntar uno, nadie puede leerlos ni cambiarlos salvo el admin.
+    match /ev/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['p','n','k','s','dv','app','r','ts'])
+        && request.resource.data.p is string && request.resource.data.p.size() <= 120
+        && request.resource.data.n is string && request.resource.data.n.size() <= 120
+        && request.resource.data.k in ['page','ver','gol']
+        && request.resource.data.s is string && request.resource.data.s.size() <= 12
+        && request.resource.data.dv in ['m','t','d']
+        && request.resource.data.app is bool
+        && request.resource.data.r is string && request.resource.data.r.size() <= 80
+        && request.resource.data.ts is timestamp
+        && request.resource.data.ts > request.time - duration.value(10, 'm')
+        && request.resource.data.ts < request.time + duration.value(10, 'm');
+      allow read, delete: if request.auth != null
+        && request.auth.token.email == 'enricalicarte@gmail.com'
+        && request.auth.token.email_verified == true;
+      allow update: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

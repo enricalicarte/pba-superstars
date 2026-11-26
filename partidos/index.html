@@ -11,9 +11,8 @@
 <meta name="apple-mobile-web-app-title" content="Anguera TV">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
-<!-- Estadísticas anónimas y sin cookies (GoatCounter). Panel: https://angueratv.goatcounter.com -->
-<script>window.goatcounter = { no_onload: true };</script>
-<script data-goatcounter="https://angueratv.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<!-- Estadísticas anónimas y sin cookies, guardadas en Firebase. Panel privado: admin/ -->
+<script src="firebase-config.js"></script>
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -611,11 +610,23 @@ const groups = () => [...new Set(DATA.map(m => m.group).filter(Boolean))];
 // ---- Inicio ----
 // ---- Estadísticas (anónimas): qué páginas, partidos y cuartos se ven ----
 const slug = m => norm((m.jornada ? 'j' + m.jornada + '-' : '') + m.title).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-function track(path, title, event, tries){
-  if (DEMO || /^(localhost|127\.)/.test(location.hostname)) return;
-  const gc = window.goatcounter;
-  if (gc && gc.count) { try { gc.count({ path, title, event: !!event }); } catch (e) {} return; }
-  if ((tries || 0) < 20) setTimeout(() => track(path, title, event, (tries || 0) + 1), 500);
+// Sin cookies ni IP ni identificador permanente: solo un id de sesión que muere al cerrar la pestaña.
+const SID = (() => { try { let v = sessionStorage.getItem('atv_sid'); if (!v) { v = Math.random().toString(36).slice(2, 10); sessionStorage.setItem('atv_sid', v); } return v; } catch (e) { return 'x'; } })();
+let refSent = false;
+function track(path, title, event){
+  const fb = window.ATV_FB;
+  if (!fb || !fb.apiKey || !fb.projectId || DEMO || /^(localhost|127\.)/.test(location.hostname)) return;
+  try { if (localStorage.getItem('atv_notrack') === '1') return; } catch (e) {}
+  const kind = !event ? 'page' : path.startsWith('gol/') ? 'gol' : 'ver';
+  const ua = navigator.userAgent;
+  const dv = /iPad|Tablet/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 't' : /Mobi|Android|iPhone/i.test(ua) ? 'm' : 'd';
+  const app = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  let r = '';
+  if (!refSent) { refSent = true; try { const h = document.referrer && new URL(document.referrer).hostname; if (h && h !== location.hostname) r = h; } catch (e) {} }
+  const f = { p: { stringValue: String(path).slice(0, 120) }, n: { stringValue: String(title || '').slice(0, 120) }, k: { stringValue: kind },
+    s: { stringValue: SID }, dv: { stringValue: dv }, app: { booleanValue: app }, r: { stringValue: r.slice(0, 80) }, ts: { timestampValue: new Date().toISOString() } };
+  const url = 'https://firestore.googleapis.com/v1/projects/' + fb.projectId + '/databases/(default)/documents/ev?key=' + fb.apiKey;
+  try { fetch(url, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fields: f }) }).catch(() => {}); } catch (e) {}
 }
 function renderHome(push){
   track('/', 'Inicio');
