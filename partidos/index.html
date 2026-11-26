@@ -11,6 +11,9 @@
 <meta name="apple-mobile-web-app-title" content="Anguera TV">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
+<!-- Estadísticas anónimas y sin cookies (GoatCounter). Panel: https://angueratv.goatcounter.com -->
+<script>window.goatcounter = { no_onload: true };</script>
+<script data-goatcounter="https://angueratv.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -606,7 +609,16 @@ function bind(root){
 const groups = () => [...new Set(DATA.map(m => m.group).filter(Boolean))];
 
 // ---- Inicio ----
+// ---- Estadísticas (anónimas): qué páginas, partidos y cuartos se ven ----
+const slug = m => norm((m.jornada ? 'j' + m.jornada + '-' : '') + m.title).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function track(path, title, event, tries){
+  if (DEMO || /^(localhost|127\.)/.test(location.hostname)) return;
+  const gc = window.goatcounter;
+  if (gc && gc.count) { try { gc.count({ path, title, event: !!event }); } catch (e) {} return; }
+  if ((tries || 0) < 20) setTimeout(() => track(path, title, event, (tries || 0) + 1), 500);
+}
 function renderHome(push){
+  track('/', 'Inicio');
   leaveWatch(); view = 'home'; setTab('tHome');
   if (!DATA.length) { $('#app').innerHTML = '<div class="center">Todavía no hay vídeos en la carpeta.</div>'; return; }
   const feat = DATA.slice(0, 3);
@@ -651,6 +663,7 @@ function drawHero(feat){
 
 // ---- Temporada ----
 function renderSeason(push){
+  track('/temporada', 'Temporada');
   leaveWatch(); view = 'season'; setTab('tSeason');
   const gs = groups(); if (!seasonGroup || !gs.includes(seasonGroup)) seasonGroup = gs[0] || '';
   const others = DATA.filter(m => !m.group);
@@ -668,6 +681,7 @@ function renderSeason(push){
 function openMatch(m, noPush, fs){
   if (!m) return;
   if (view === 'home' || view === 'season') back = { view, y: scrollY };
+  track('/partido/' + slug(m), m.title + (m.group ? ' · ' + m.group : ''));
   closeSearch(); leaveWatch(); view = 'watch'; current = m; setTab(null); $('#backBtn').hidden = false;
   seen = [m.id, ...seen.filter(x => x !== m.id)].slice(0, 300); store.set('partidos_seen', JSON.stringify(seen));
   const more = DATA.filter(x => x.id !== m.id && x.group === m.group).slice(0, 14);
@@ -996,6 +1010,7 @@ function showStage(){
 }
 function startWatch(i){
   if (!current) return;
+  track('ver/' + slug(current) + '/' + (i + 1), 'Ver ' + current.title + ' · ' + partName(current.videos[i].name), true);
   showStage();
   if (i !== part) play(i);
   else if (mode === 'native') { const v = $('#vplayer'), p = v.play(); if (p && p.catch) p.catch(() => {}); }
@@ -1003,6 +1018,7 @@ function startWatch(i){
 }
 function jumpGoal(min){
   if (!current) return;
+  track('gol/' + slug(current), 'Gol · ' + current.title, true);
   showStage();
   const n = current.videos.length, per = 48 / n, q = Math.min(n - 1, Math.floor((min - 1) / per)), frac = Math.max(0, ((min - 1) - q * per) / per);
   const v = $('#vplayer');
